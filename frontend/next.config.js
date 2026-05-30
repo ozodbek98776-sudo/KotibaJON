@@ -1,3 +1,6 @@
+const isProd = process.env.NODE_ENV === 'production'
+const isGithubPages = process.env.GITHUB_PAGES === 'true'
+
 const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
@@ -18,8 +21,11 @@ const withPWA = require('next-pwa')({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: isGithubPages ? 'export' : undefined,
+  trailingSlash: isGithubPages ? true : false,
   reactStrictMode: true,
   images: {
+    unoptimized: isGithubPages ? true : false,
     domains: [
       'avatars.githubusercontent.com',
       'lh3.googleusercontent.com',
