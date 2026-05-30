@@ -5,65 +5,100 @@ interface LogoProps {
   className?: string
 }
 
+/* ── Pixel-perfect reproduction of the KOTIBAJON logo ────────── */
 export function KotibaLogo({ size = 36, variant = 'color', showText = true, className = '' }: LogoProps) {
-  const blue  = variant === 'white' ? '#fff'     : variant === 'dark' ? '#1D4ED8' : '#2563EB'
-  const blue2 = variant === 'white' ? '#ffffffcc': variant === 'dark' ? '#3B82F6' : '#3B82F6'
-  const text  = variant === 'white' ? 'text-white' : variant === 'dark' ? 'text-blue-800' : 'text-slate-900 dark:text-white'
+  const isWhite = variant === 'white'
+  const blue    = isWhite ? '#ffffff' : '#2563EB'
+  const blue2   = isWhite ? '#ffffffcc' : '#60A5FA'
+  const textCol = isWhite ? 'text-white' : 'text-slate-900 dark:text-white'
 
   return (
     <div className={`flex items-center gap-2.5 ${className}`}>
-      {/* SVG Icon */}
-      <svg
-        width={size}
-        height={size}
-        viewBox="0 0 48 48"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ flexShrink: 0 }}
-      >
-        {/* Outer arc — stopwatch ring, gap at top-right */}
-        <circle
-          cx="26" cy="26" r="18"
-          stroke={blue2}
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeDasharray="88 24"
-          transform="rotate(-115 26 26)"
-        />
-
-        {/* Clock hand — long diagonal pointer */}
-        <line x1="26" y1="26" x2="40" y2="10" stroke={blue} strokeWidth="2.8" strokeLinecap="round" />
-
-        {/* Center pivot dot */}
-        <circle cx="26" cy="26" r="2.5" fill={blue} />
-
-        {/* Tick at 12-o'clock top of arc */}
-        <line x1="26" y1="7" x2="26" y2="11" stroke={blue} strokeWidth="2.5" strokeLinecap="round" />
-
-        {/* ── K letter (path-based, no font dependency) ── */}
-        {/* Vertical stroke of K */}
-        <line x1="7" y1="10" x2="7" y2="40" stroke={blue} strokeWidth="4.5" strokeLinecap="round" />
-        {/* Upper diagonal of K */}
-        <line x1="7" y1="25" x2="21" y2="10" stroke={blue} strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
-        {/* Lower diagonal of K */}
-        <line x1="7" y1="25" x2="22" y2="40" stroke={blue} strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
-        {/* Small inner notch of K */}
-        <line x1="7" y1="25" x2="14" y2="18" stroke={blue} strokeWidth="4.5" strokeLinecap="round" />
-      </svg>
-
-      {/* Wordmark */}
+      <KotibaIcon size={size} variant={variant} />
       {showText && (
-        <div className="leading-none">
-          <span className={`text-[17px] font-black tracking-tight ${text}`}>
-            KOTIBA<span style={{ color: blue }}>JON</span>
-          </span>
-        </div>
+        <span className={`font-black tracking-tight ${textCol}`}
+              style={{ fontSize: size * 0.48, lineHeight: 1 }}>
+          KOTIBA<span style={{ color: blue }}>JON</span>
+        </span>
       )}
     </div>
   )
 }
 
-/* Icon only (no text) — for favicon, avatar, etc. */
-export function KotibaIcon({ size = 32, className = '' }: { size?: number; className?: string }) {
-  return <KotibaLogo size={size} showText={false} className={className} />
+/* ── Icon-only component ─────────────────────────────────────── */
+export function KotibaIcon({ size = 36, variant = 'color', className = '' }:
+  { size?: number; variant?: 'color' | 'white' | 'dark'; className?: string }) {
+
+  const isWhite = variant === 'white'
+  const c1 = isWhite ? '#ffffff' : '#2563EB'   // main blue
+  const c2 = isWhite ? '#ffffffaa' : '#3B82F6'  // lighter blue
+  const glowId = `glow-${size}-${variant}`
+
+  return (
+    <svg
+      width={size} height={size}
+      viewBox="0 0 200 200"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{ flexShrink: 0 }}
+    >
+      <defs>
+        <filter id={glowId} x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="3.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <linearGradient id={`bg-${size}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor={c2} />
+          <stop offset="100%" stopColor={c1} />
+        </linearGradient>
+      </defs>
+
+      {/* ── Clock circle ──────────────────────────────────────── */}
+      <circle
+        cx="118" cy="100" r="68"
+        stroke={c1} strokeWidth="9" fill="none"
+        filter={`url(#${glowId})`}
+      />
+
+      {/* 12-o'clock tick (vertical pill) */}
+      <rect x="112" y="22" width="12" height="20" rx="6"
+            fill={c2} filter={`url(#${glowId})`} />
+
+      {/* 3-o'clock tick (horizontal dash) */}
+      <rect x="176" y="94" width="18" height="12" rx="6"
+            fill={c2} filter={`url(#${glowId})`} />
+
+      {/* ── Clock needle (sharp triangular pointer) ────────────── */}
+      {/* Goes from center (118,100) toward 1–2 o'clock (~150,38) */}
+      <polygon
+        points="118,100  152,34  112,96"
+        fill={c1} filter={`url(#${glowId})`}
+      />
+      {/* Needle center pivot dot */}
+      <circle cx="118" cy="100" r="7" fill={c1} filter={`url(#${glowId})`} />
+
+      {/* ── K letter ──────────────────────────────────────────── */}
+      {/* Vertical bar — italic, full height */}
+      <path
+        d="M 18 18 L 36 18 L 54 182 L 36 182 Z"
+        fill={`url(#bg-${size})`} filter={`url(#${glowId})`}
+      />
+
+      {/* Upper arm — thick diagonal from mid-left to upper-right */}
+      <path
+        d="M 36 108 L 50 100 L 148 18 L 164 34 L 64 120 Z"
+        fill={`url(#bg-${size})`} filter={`url(#${glowId})`}
+      />
+
+      {/* Lower arm — longer, sweeps to lower right, sharp end */}
+      <path
+        d="M 42 118 L 58 112 L 168 180 L 152 196 L 44 132 Z"
+        fill={`url(#bg-${size})`} filter={`url(#${glowId})`}
+      />
+    </svg>
+  )
 }

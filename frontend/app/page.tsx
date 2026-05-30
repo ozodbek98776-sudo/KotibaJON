@@ -5,7 +5,7 @@ import {
   Check, Star, Shield, Globe,
   Users, Award, Sparkles, Zap,
 } from 'lucide-react'
-import { KotibaLogo } from '@/components/ui/KotibaLogo'
+import { KotibaLogo, KotibaIcon } from '@/components/ui/KotibaLogo'
 
 const features = [
   { icon: CheckSquare, title: 'Vazifalar Boshqaruvi',  desc: 'Kunlik, haftalik va oylik vazifalaringizni tartibli boshqaring. Kanban, ro\'yxat va kalendar ko\'rinishlari.' },
@@ -105,62 +105,129 @@ export default function LandingPage() {
       </nav>
 
       {/* ── HERO ────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-20 pb-28 px-5">
-        {/* Subtle grid bg */}
+      <section className="relative overflow-hidden">
+        {/* Grid background */}
         <div className="absolute inset-0 pointer-events-none"
              style={{
-               backgroundImage: 'linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)',
+               backgroundImage: 'linear-gradient(rgba(0,0,0,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.035) 1px, transparent 1px)',
                backgroundSize: '32px 32px',
              }} />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#FAFAFA] dark:to-[#09090B] pointer-events-none" />
+        {/* Blue glow behind logo */}
+        <div className="absolute right-0 top-0 w-[55%] h-full pointer-events-none hidden lg:block"
+             style={{ background: 'radial-gradient(ellipse at 70% 50%, rgba(37,99,235,0.07) 0%, transparent 70%)' }} />
 
-        <div className="relative max-w-4xl mx-auto text-center">
-          {/* Pill badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[#2A2A2A] rounded-full text-xs font-bold text-neutral-600 dark:text-neutral-400 mb-8"
-               style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
-            <Sparkles className="w-3.5 h-3.5 text-accent-500" />
-            O'zbekistondagi №1 Samaradorlik Platformasi
-          </div>
+        <div className="relative max-w-7xl mx-auto px-5">
+          <div className="flex flex-col lg:flex-row items-center gap-12 pt-16 pb-20 lg:pt-20 lg:pb-28">
 
-          <h1 className="text-6xl md:text-7xl font-black text-neutral-900 dark:text-white mb-6 tracking-tight leading-[1.05]">
-            Hayotingizni{' '}
-            <span className="relative">
-              <span className="text-gradient-accent">tartibga</span>
-            </span>
-            {' '}soling
-          </h1>
+            {/* ── LEFT: Text ─────────────────────────────────────── */}
+            <div className="flex-1 text-center lg:text-left max-w-xl">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[#2A2A2A] rounded-full text-xs font-bold text-neutral-600 dark:text-neutral-400 mb-8"
+                   style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                <Sparkles className="w-3.5 h-3.5 text-accent-500" />
+                O'zbekistondagi №1 Samaradorlik Platformasi
+              </div>
 
-          <p className="text-xl text-neutral-500 dark:text-neutral-400 max-w-2xl mx-auto mb-10 leading-relaxed font-medium">
-            Vazifalar, moliya, maqsadlar va muhim sanalarni bitta aqlli platformada
-            boshqaring. O'zbek tiliga to'liq moslashtirilgan.
-          </p>
+              <h1 className="text-5xl md:text-6xl lg:text-[64px] font-black text-neutral-900 dark:text-white mb-6 tracking-tight leading-[1.05]">
+                Hayotingizni{' '}
+                <span className="text-gradient-accent">tartibga</span>
+                {' '}soling
+              </h1>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
-            <Link href="/register"
-                  className="h-12 px-8 inline-flex items-center gap-2 bg-[#0F0F0F] dark:bg-white text-white dark:text-[#0F0F0F] text-base font-black rounded-xl transition-all hover:bg-[#1c1c1c] dark:hover:bg-neutral-100"
-                  style={{ boxShadow: '0 4px 14px rgba(0,0,0,0.25)' }}>
-              Bepul boshlash <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link href="/dashboard"
-                  className="h-12 px-8 inline-flex items-center gap-2 bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[#2A2A2A] text-neutral-700 dark:text-neutral-300 text-base font-bold rounded-xl transition-all hover:bg-neutral-50 dark:hover:bg-[#1A1A1A]"
-                  style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
-              Demo ko'rish
-            </Link>
-          </div>
+              <p className="text-lg text-neutral-500 dark:text-neutral-400 mb-10 leading-relaxed font-medium">
+                Vazifalar, moliya, maqsadlar va muhim sanalarni bitta aqlli
+                platformada boshqaring. O'zbek tiliga to'liq moslashtirilgan.
+              </p>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
-            {stats.map(s => {
-              const Icon = s.icon
-              return (
-                <div key={s.label} className="bg-white dark:bg-[#111111] rounded-xl p-4 border border-neutral-200 dark:border-[#1F1F1F]"
-                     style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                  <Icon className="w-4 h-4 text-neutral-400 mx-auto mb-2" />
-                  <div className="text-xl font-black text-neutral-900 dark:text-white font-mono">{s.value}</div>
-                  <div className="text-[11px] font-semibold text-neutral-400 mt-0.5">{s.label}</div>
+              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-12">
+                <Link href="/register"
+                      className="h-12 px-8 inline-flex items-center gap-2 text-white text-base font-black rounded-xl transition-all hover:opacity-90"
+                      style={{ background: 'linear-gradient(135deg,#1D4ED8,#2563EB)', boxShadow: '0 6px 20px rgba(37,99,235,0.40)' }}>
+                  Bepul boshlash <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link href="/dashboard"
+                      className="h-12 px-8 inline-flex items-center gap-2 bg-white dark:bg-[#111111] border border-neutral-200 dark:border-[#2A2A2A] text-neutral-700 dark:text-neutral-300 text-base font-bold rounded-xl transition-all hover:bg-neutral-50 dark:hover:bg-[#1A1A1A]"
+                      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                  Demo ko'rish
+                </Link>
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-md mx-auto lg:mx-0">
+                {stats.map(s => {
+                  const Icon = s.icon
+                  return (
+                    <div key={s.label}
+                         className="bg-white dark:bg-[#111111] rounded-xl p-3.5 border border-neutral-200 dark:border-[#1F1F1F] text-center"
+                         style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                      <Icon className="w-4 h-4 text-neutral-400 mx-auto mb-1.5" />
+                      <div className="text-lg font-black text-neutral-900 dark:text-white font-mono">{s.value}</div>
+                      <div className="text-[10px] font-semibold text-neutral-400 mt-0.5 leading-tight">{s.label}</div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* ── RIGHT: Logo showcase ──────────────────────────── */}
+            <div className="hidden lg:flex flex-1 items-center justify-center relative">
+              {/* Outer glow rings */}
+              <div className="absolute w-[440px] h-[440px] rounded-full border border-blue-200/30 dark:border-blue-800/30 animate-pulse" />
+              <div className="absolute w-[360px] h-[360px] rounded-full border border-blue-300/20 dark:border-blue-700/20" />
+
+              {/* Dark card with logo */}
+              <div
+                className="relative w-[320px] h-[320px] rounded-3xl flex items-center justify-center overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #0a0f1e 0%, #111827 40%, #0d1b3e 100%)',
+                  boxShadow: '0 0 80px rgba(37,99,235,0.25), 0 0 0 1px rgba(37,99,235,0.15), inset 0 1px 0 rgba(255,255,255,0.05)',
+                }}
+              >
+                {/* Radial blue glow inside card */}
+                <div className="absolute inset-0 rounded-3xl pointer-events-none"
+                     style={{ background: 'radial-gradient(ellipse at 60% 50%, rgba(37,99,235,0.18) 0%, transparent 65%)' }} />
+
+                {/* Dot grid inside card */}
+                <div className="absolute inset-0 rounded-3xl pointer-events-none opacity-30"
+                     style={{
+                       backgroundImage: 'radial-gradient(rgba(99,146,255,0.3) 1px, transparent 1px)',
+                       backgroundSize: '20px 20px',
+                     }} />
+
+                {/* The logo itself */}
+                <div className="relative z-10 flex flex-col items-center gap-4">
+                  <KotibaIcon size={200} variant="color" />
+                  <div className="text-center">
+                    <p className="text-white font-black text-2xl tracking-widest">KOTIBAJON</p>
+                    <p className="text-blue-400 text-xs font-semibold tracking-widest uppercase mt-1">
+                      Shaxsiy Raqamli Kotiba
+                    </p>
+                  </div>
                 </div>
-              )
-            })}
+
+                {/* Corner accents */}
+                <div className="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-blue-500/50 rounded-tl-lg" />
+                <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-blue-500/50 rounded-tr-lg" />
+                <div className="absolute bottom-4 left-4 w-6 h-6 border-b-2 border-l-2 border-blue-500/50 rounded-bl-lg" />
+                <div className="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-blue-500/50 rounded-br-lg" />
+              </div>
+
+              {/* Floating feature badges */}
+              <div className="absolute -left-4 top-[20%] bg-white dark:bg-[#111] rounded-xl px-3.5 py-2.5 border border-neutral-200 dark:border-[#222] text-xs font-bold text-neutral-700 dark:text-neutral-300"
+                   style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.10)' }}>
+                ✅ 50,000+ foydalanuvchi
+              </div>
+              <div className="absolute -right-4 bottom-[22%] bg-white dark:bg-[#111] rounded-xl px-3.5 py-2.5 border border-neutral-200 dark:border-[#222] text-xs font-bold text-neutral-700 dark:text-neutral-300"
+                   style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.10)' }}>
+                🇺🇿 O'zbek tiliga mos
+              </div>
+              <div className="absolute left-[15%] -bottom-2 bg-white dark:bg-[#111] rounded-xl px-3.5 py-2.5 border border-neutral-200 dark:border-[#222] text-xs font-bold text-neutral-700 dark:text-neutral-300"
+                   style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.10)' }}>
+                ⚡ Offline ishlaydi
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
