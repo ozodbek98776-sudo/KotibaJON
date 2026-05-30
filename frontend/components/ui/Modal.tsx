@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -18,29 +18,30 @@ interface ModalProps {
 const sizes = { sm: 'max-w-sm', md: 'max-w-md', lg: 'max-w-lg' }
 
 export function Modal({ open, onClose, title, description, size = 'md', children, footer }: ModalProps) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => { setMounted(true) }, [])
-
-  // Close on Escape
+  // Escape key
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    if (open) document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    if (!open) return
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
   }, [open, onClose])
 
-  // Lock body scroll
+  // Body scroll lock
   useEffect(() => {
-    if (open) document.body.style.overflow = 'hidden'
-    else document.body.style.overflow = ''
+    document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [open])
 
-  if (!open || !mounted) return null
+  // Don't render on server or when closed
+  if (!open || typeof document === 'undefined') return null
 
   return createPortal(
-    <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4">
-      {/* Overlay */}
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+    >
+      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={onClose}
@@ -48,9 +49,9 @@ export function Modal({ open, onClose, title, description, size = 'md', children
 
       {/* Panel */}
       <div className={cn(
-        'relative w-full animate-scale-in',
-        'rounded-2xl border bg-white shadow-2xl',
-        'border-border-light dark:border-primary-700',
+        'relative z-10 w-full animate-scale-in',
+        'rounded-2xl bg-white shadow-2xl',
+        'border border-border-light dark:border-primary-700',
         'dark:bg-primary-800',
         sizes[size],
       )}>
@@ -65,6 +66,7 @@ export function Modal({ open, onClose, title, description, size = 'md', children
             )}
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="ml-4 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-primary-400 transition-colors hover:bg-primary-50 hover:text-primary-700 dark:hover:bg-primary-700 dark:hover:text-primary-100"
           >
@@ -73,7 +75,9 @@ export function Modal({ open, onClose, title, description, size = 'md', children
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5">{children}</div>
+        <div className="max-h-[70vh] overflow-y-auto px-6 py-5">
+          {children}
+        </div>
 
         {/* Footer */}
         {footer && (
@@ -83,6 +87,6 @@ export function Modal({ open, onClose, title, description, size = 'md', children
         )}
       </div>
     </div>,
-    document.body
+    document.body,
   )
 }

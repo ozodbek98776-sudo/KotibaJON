@@ -28,7 +28,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-5 animate-fade-in">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Sozlamalar</h1>
+      <h1 className="text-2xl font-bold text-primary-900 dark:text-primary-50">Sozlamalar</h1>
 
       <div className="flex flex-col lg:flex-row gap-5">
         {/* Sidebar nav */}
@@ -44,8 +44,8 @@ export default function SettingsPage() {
                     className={cn(
                       'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-left',
                       activeSection === s.id
-                        ? 'bg-neutral-900 dark:bg-white text-white'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                        ? 'bg-primary-500 dark:bg-white text-white'
+                        : 'text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-700/30'
                     )}
                   >
                     <Icon className="w-4 h-4 flex-shrink-0" />
@@ -69,17 +69,17 @@ export default function SettingsPage() {
           {/* Profile */}
           {activeSection === 'profile' && (
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Profil Ma'lumotlari</h2>
+              <h2 className="text-lg font-semibold text-primary-900 dark:text-primary-50 mb-6">Profil Ma'lumotlari</h2>
               <div className="flex items-center gap-4 mb-6">
                 <div className="relative">
                   <Avatar name={profile.name} size="xl" />
-                  <button className="absolute -bottom-1 -right-1 w-7 h-7 bg-neutral-900 dark:bg-white rounded-full flex items-center justify-center text-white hover:bg-primary-600 transition-colors shadow-sm">
+                  <button className="absolute -bottom-1 -right-1 w-7 h-7 bg-primary-500 dark:bg-white rounded-full flex items-center justify-center text-white hover:bg-primary-600 transition-colors shadow-sm">
                     <Camera className="w-3.5 h-3.5" />
                   </button>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">{profile.name}</p>
-                  <p className="text-sm text-gray-400">{profile.email}</p>
+                  <p className="font-semibold text-primary-900 dark:text-primary-50">{profile.name}</p>
+                  <p className="text-sm text-primary-400">{profile.email}</p>
                   <Badge variant="primary" className="mt-1">Pro tarif</Badge>
                 </div>
               </div>
@@ -120,7 +120,7 @@ export default function SettingsPage() {
           {/* Notifications */}
           {activeSection === 'notifications' && (
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Bildirishnomalar</h2>
+              <h2 className="text-lg font-semibold text-primary-900 dark:text-primary-50 mb-6">Bildirishnomalar</h2>
               <div className="space-y-4">
                 {[
                   { key: 'push', label: 'Push bildirishnomalar', desc: 'Brauzer va mobil push' },
@@ -133,14 +133,14 @@ export default function SettingsPage() {
                 ].map(item => (
                   <div key={item.key} className="flex items-center justify-between py-3 border-b border-border-light dark:border-border-dark last:border-0">
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">{item.label}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{item.desc}</p>
+                      <p className="text-sm font-medium text-primary-900 dark:text-primary-50">{item.label}</p>
+                      <p className="text-xs text-primary-400 mt-0.5">{item.desc}</p>
                     </div>
                     <button
                       onClick={() => setNotifs(prev => ({ ...prev, [item.key]: !prev[item.key as keyof typeof prev] }))}
                       className={cn(
                         'relative w-11 h-6 rounded-full transition-all duration-200',
-                        notifs[item.key as keyof typeof notifs] ? 'bg-neutral-900 dark:bg-white' : 'bg-gray-200 dark:bg-gray-700'
+                        notifs[item.key as keyof typeof notifs] ? 'bg-primary-500 dark:bg-white' : 'bg-gray-200 dark:bg-gray-700'
                       )}
                     >
                       <div className={cn(
@@ -157,7 +157,7 @@ export default function SettingsPage() {
           {/* Appearance */}
           {activeSection === 'appearance' && (
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Ko'rinish</h2>
+              <h2 className="text-lg font-semibold text-primary-900 dark:text-primary-50 mb-6">Ko'rinish</h2>
               <div>
                 <label className="label mb-3">Mavzu</label>
                 <div className="grid grid-cols-3 gap-3">
@@ -176,8 +176,8 @@ export default function SettingsPage() {
                           : 'border-border-light dark:border-border-dark hover:border-gray-300'
                       )}
                     >
-                      <span className={theme === t.value ? 'text-neutral-900 dark:text-white' : 'text-gray-400'}>{t.icon}</span>
-                      <span className={cn('text-sm font-medium', theme === t.value ? 'text-neutral-700 dark:text-primary-400' : 'text-gray-500')}>{t.label}</span>
+                      <span className={theme === t.value ? 'text-neutral-900 dark:text-primary-50' : 'text-primary-400'}>{t.icon}</span>
+                      <span className={cn('text-sm font-medium', theme === t.value ? 'text-neutral-700 dark:text-primary-400' : 'text-primary-500')}>{t.label}</span>
                     </button>
                   ))}
                 </div>
@@ -188,7 +188,7 @@ export default function SettingsPage() {
           {/* Language */}
           {activeSection === 'language' && (
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Til va Mintaqa</h2>
+              <h2 className="text-lg font-semibold text-primary-900 dark:text-primary-50 mb-6">Til va Mintaqa</h2>
               <div className="space-y-5">
                 <div>
                   <label className="label mb-2">Interfeys tili</label>
@@ -205,7 +205,7 @@ export default function SettingsPage() {
                         )}
                       >
                         <div className="text-xl mb-1">{l.flag}</div>
-                        <div className={cn('text-xs font-medium', language === l.code ? 'text-neutral-700 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400')}>{l.label}</div>
+                        <div className={cn('text-xs font-medium', language === l.code ? 'text-neutral-700 dark:text-primary-400' : 'text-primary-600 dark:text-primary-400')}>{l.label}</div>
                       </button>
                     ))}
                   </div>
@@ -221,7 +221,7 @@ export default function SettingsPage() {
                           'py-2 px-3 rounded-button border text-sm font-mono font-medium transition-all',
                           currency === c
                             ? 'border-neutral-900 dark:border-white bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-primary-400'
-                            : 'border-border-light dark:border-border-dark text-gray-600 dark:text-gray-400 hover:border-gray-300'
+                            : 'border-border-light dark:border-border-dark text-primary-600 dark:text-primary-400 hover:border-gray-300'
                         )}
                       >
                         {c}
@@ -237,7 +237,7 @@ export default function SettingsPage() {
           {/* Subscription */}
           {activeSection === 'subscription' && (
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Obuna</h2>
+              <h2 className="text-lg font-semibold text-primary-900 dark:text-primary-50 mb-6">Obuna</h2>
               <div className="p-5 rounded-xl bg-gradient-to-r from-primary-500 to-primary-600 text-white mb-6">
                 <div className="flex items-center justify-between mb-3">
                   <div>
@@ -252,7 +252,7 @@ export default function SettingsPage() {
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Pro imkoniyatlari</h3>
                 {['Cheksiz vazifalar', 'Push + SMS + Telegram', 'To\'liq moliya moduli', 'Oylik hisobotlar', '1 GB fayl saqlash'].map(f => (
-                  <div key={f} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                  <div key={f} className="flex items-center gap-2 text-sm text-primary-600 dark:text-primary-400">
                     <div className="w-4 h-4 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
                       <svg className="w-2.5 h-2.5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                     </div>
@@ -271,7 +271,7 @@ export default function SettingsPage() {
           {/* Security */}
           {activeSection === 'security' && (
             <Card padding="lg">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Xavfsizlik</h2>
+              <h2 className="text-lg font-semibold text-primary-900 dark:text-primary-50 mb-6">Xavfsizlik</h2>
               <div className="space-y-5">
                 <div>
                   <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Parolni o'zgartirish</h3>
@@ -285,8 +285,8 @@ export default function SettingsPage() {
                 <div className="pt-4 border-t border-border-light dark:border-border-dark">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">Ikki bosqichli autentifikatsiya</p>
-                      <p className="text-xs text-gray-400 mt-0.5">TOTP (Google Authenticator)</p>
+                      <p className="text-sm font-medium text-primary-900 dark:text-primary-50">Ikki bosqichli autentifikatsiya</p>
+                      <p className="text-xs text-primary-400 mt-0.5">TOTP (Google Authenticator)</p>
                     </div>
                     <Badge variant="default">Yoqilmagan</Badge>
                   </div>
@@ -302,7 +302,7 @@ export default function SettingsPage() {
                       <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-border-light dark:border-border-dark">
                         <div>
                           <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{s.device}</p>
-                          <p className="text-xs text-gray-400">{s.location}</p>
+                          <p className="text-xs text-primary-400">{s.location}</p>
                         </div>
                         {s.current ? <Badge variant="success">Joriy</Badge> : <Button variant="ghost" size="sm">Chiqarish</Button>}
                       </div>

@@ -141,25 +141,25 @@ export default function TasksPage() {
           onChange={e => set({ ...form, description: e.target.value })} placeholder="Qo'shimcha ma'lumot..." rows={2} />
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="mb-1.5 block text-sm font-bold text-neutral-800 dark:text-neutral-200">Muhimlik</label>
+            <label className="mb-1.5 block text-sm font-bold text-primary-800 dark:text-primary-200">Muhimlik</label>
             <select value={form.priority} onChange={e => set({ ...form, priority: e.target.value as Priority })}
-              className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100">
+              className="h-10 w-full rounded-lg border border-border-light bg-white px-3 text-sm font-semibold text-primary-900 outline-none focus:border-neutral-500 dark:border-primary-700 dark:bg-primary-800 dark:text-neutral-100">
               {PRIORITIES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
             </select>
           </div>
           <div>
-            <label className="mb-1.5 block text-sm font-bold text-neutral-800 dark:text-neutral-200">Holat</label>
+            <label className="mb-1.5 block text-sm font-bold text-primary-800 dark:text-primary-200">Holat</label>
             <select value={form.status} onChange={e => set({ ...form, status: e.target.value as Status })}
-              className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100">
+              className="h-10 w-full rounded-lg border border-border-light bg-white px-3 text-sm font-semibold text-primary-900 outline-none focus:border-neutral-500 dark:border-primary-700 dark:bg-primary-800 dark:text-neutral-100">
               {STATUSES.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="mb-1.5 block text-sm font-bold text-neutral-800 dark:text-neutral-200">Kategoriya</label>
+            <label className="mb-1.5 block text-sm font-bold text-primary-800 dark:text-primary-200">Kategoriya</label>
             <select value={form.category} onChange={e => set({ ...form, category: e.target.value })}
-              className="h-10 w-full rounded-lg border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-900 outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100">
+              className="h-10 w-full rounded-lg border border-border-light bg-white px-3 text-sm font-semibold text-primary-900 outline-none focus:border-neutral-500 dark:border-primary-700 dark:bg-primary-800 dark:text-neutral-100">
               {CATS.filter(c => c !== 'Barchasi').map(c => <option key={c}>{c}</option>)}
             </select>
           </div>
@@ -177,8 +177,8 @@ export default function TasksPage() {
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white">Vazifalar</h1>
-          <p className="mt-0.5 text-sm text-neutral-500">
+          <h1 className="text-2xl font-extrabold tracking-tight text-primary-900 dark:text-primary-50">Vazifalar</h1>
+          <p className="mt-0.5 text-sm text-primary-500">
             {tasks.filter(t => t.status === 'done').length} / {tasks.length} bajarildi
           </p>
         </div>
@@ -195,7 +195,7 @@ export default function TasksPage() {
             leftIcon={<Search className="h-4 w-4" />} />
         </div>
         {/* View toggle */}
-        <div className="flex items-center gap-1 rounded-lg bg-neutral-100 p-1 dark:bg-neutral-800">
+        <div className="flex items-center gap-1 rounded-lg bg-primary-50 p-1 dark:bg-primary-700/60">
           {[
             { key: 'list',    icon: <CheckSquare className="h-4 w-4" /> },
             { key: 'kanban',  icon: <Layout      className="h-4 w-4" /> },
@@ -204,8 +204,8 @@ export default function TasksPage() {
             <button key={v.key} onClick={() => setView(v.key as View)}
               className={cn('flex items-center justify-center rounded-md px-3 py-1.5 text-sm font-bold transition-all',
                 view === v.key
-                  ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-700 dark:text-white'
-                  : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300',
+                  ? 'bg-white text-primary-900 shadow-sm dark:bg-neutral-700 dark:text-primary-50'
+                  : 'text-primary-500 hover:text-primary-700 dark:hover:text-primary-300',
               )}>
               {v.icon}
             </button>
@@ -220,8 +220,8 @@ export default function TasksPage() {
             className={cn(
               'whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-bold transition-all',
               cat === c
-                ? 'bg-neutral-900 text-white dark:bg-white dark:text-neutral-900'
-                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400',
+                ? 'bg-primary-800 text-white dark:bg-white dark:text-primary-900'
+                : 'bg-primary-50 text-primary-600 hover:bg-neutral-200 dark:bg-primary-700/60 dark:text-primary-400',
             )}>
             {c}
           </button>
@@ -233,8 +233,8 @@ export default function TasksPage() {
         <div className="space-y-2">
           {filtered.length === 0 ? (
             <div className="py-16 text-center">
-              <CheckSquare className="mx-auto mb-3 h-12 w-12 text-neutral-200 dark:text-neutral-700" />
-              <p className="text-sm text-neutral-400">Vazifalar topilmadi</p>
+              <CheckSquare className="mx-auto mb-3 h-12 w-12 text-primary-200 dark:text-primary-700" />
+              <p className="text-sm text-primary-400">Vazifalar topilmadi</p>
             </div>
           ) : filtered.map(task => (
             <TaskRow key={task.id} task={task}
@@ -244,7 +244,7 @@ export default function TasksPage() {
           ))}
           <button
             onClick={() => setAddModal(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-neutral-200 py-3 text-sm font-bold text-neutral-400 transition-all hover:border-neutral-400 hover:text-neutral-600 dark:border-neutral-800">
+            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border-light py-3 text-sm font-bold text-primary-400 transition-all hover:border-neutral-400 hover:text-primary-600 dark:border-primary-700/50">
             <Plus className="h-4 w-4" /> Yangi vazifa qo'shish
           </button>
         </div>
@@ -256,29 +256,29 @@ export default function TasksPage() {
           {kanbanCols.map(col => {
             const colTasks = filtered.filter(t => t.status === col.key)
             return (
-              <div key={col.key} className="rounded-xl border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-900">
+              <div key={col.key} className="rounded-xl border border-border-light bg-primary-50/50 p-3 dark:border-primary-700/50 dark:bg-primary-800">
                 <div className="mb-3 flex items-center gap-2">
                   <div className={cn('h-2.5 w-2.5 rounded-full', col.dot)} />
-                  <span className="text-sm font-extrabold text-neutral-700 dark:text-neutral-300">{col.label}</span>
-                  <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-xs font-bold text-neutral-500 shadow-sm dark:bg-neutral-800">
+                  <span className="text-sm font-extrabold text-primary-700 dark:text-primary-300">{col.label}</span>
+                  <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-xs font-bold text-primary-500 shadow-sm dark:bg-primary-700/60">
                     {colTasks.length}
                   </span>
                 </div>
                 <div className="space-y-2">
                   {colTasks.map(task => (
                     <div key={task.id}
-                      className="rounded-xl border border-neutral-200 bg-white p-3 shadow-sm transition-all hover:shadow-md dark:border-neutral-700 dark:bg-neutral-800">
+                      className="rounded-xl border border-border-light bg-white p-3 shadow-sm transition-all hover:shadow-md dark:border-primary-700 dark:bg-primary-700/60">
                       <div className="mb-2 flex items-start justify-between gap-2">
-                        <p className="text-sm font-bold text-neutral-900 dark:text-white">{task.title}</p>
+                        <p className="text-sm font-bold text-primary-900 dark:text-primary-50">{task.title}</p>
                         <button onClick={() => openEdit(task)}
-                          className="flex-shrink-0 rounded p-0.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-700">
+                          className="flex-shrink-0 rounded p-0.5 text-primary-400 hover:bg-primary-50 hover:text-primary-700 dark:hover:bg-neutral-700">
                           <Edit3 className="h-3.5 w-3.5" />
                         </button>
                       </div>
                       <div className="flex flex-wrap items-center gap-1.5">
                         <Badge variant={pBadge[task.priority]}>{pLabel[task.priority]}</Badge>
                         {task.dueDate && (
-                          <span className="flex items-center gap-1 text-xs text-neutral-400">
+                          <span className="flex items-center gap-1 text-xs text-primary-400">
                             <Clock className="h-3 w-3" />{formatDate(task.dueDate)}
                           </span>
                         )}
@@ -286,7 +286,7 @@ export default function TasksPage() {
                     </div>
                   ))}
                   <button onClick={() => setAddModal(true)}
-                    className="flex w-full items-center justify-center gap-1 rounded-lg border border-dashed border-neutral-200 py-2 text-xs font-bold text-neutral-400 hover:border-neutral-400 hover:text-neutral-600 dark:border-neutral-700">
+                    className="flex w-full items-center justify-center gap-1 rounded-lg border border-dashed border-border-light py-2 text-xs font-bold text-primary-400 hover:border-neutral-400 hover:text-primary-600 dark:border-primary-700">
                     <Plus className="h-3.5 w-3.5" /> Qo'shish
                   </button>
                 </div>
@@ -298,10 +298,10 @@ export default function TasksPage() {
 
       {/* Calendar placeholder */}
       {view === 'calendar' && (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-neutral-200 bg-white py-16 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-          <Calendar className="mb-3 h-12 w-12 text-neutral-200 dark:text-neutral-700" />
-          <p className="font-bold text-neutral-600 dark:text-neutral-400">Kalendar ko'rinishi</p>
-          <p className="mt-1 text-sm text-neutral-400">Tez orada qo'shiladi</p>
+        <div className="flex flex-col items-center justify-center rounded-xl border border-border-light bg-white py-16 shadow-sm dark:border-primary-700/50 dark:bg-primary-800">
+          <Calendar className="mb-3 h-12 w-12 text-primary-200 dark:text-primary-700" />
+          <p className="font-bold text-primary-600 dark:text-primary-400">Kalendar ko'rinishi</p>
+          <p className="mt-1 text-sm text-primary-400">Tez orada qo'shiladi</p>
         </div>
       )}
 
@@ -338,7 +338,7 @@ export default function TasksPage() {
             <Button variant="danger" size="sm" onClick={confirmDelete}>O'chirish</Button>
           </>
         }>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+        <p className="text-sm text-primary-600 dark:text-primary-400">
           Bu amal qaytarib bo'lmaydi. Vazifa to'liq o'chiriladi.
         </p>
       </Modal>
@@ -358,10 +358,10 @@ function TaskRow({ task, onToggle, onEdit, onDelete }: {
 
   return (
     <div className={cn(
-      'rounded-xl border bg-white transition-all dark:bg-neutral-900',
+      'rounded-xl border bg-white transition-all dark:bg-primary-800',
       done
-        ? 'border-neutral-100 opacity-60 dark:border-neutral-800'
-        : 'border-neutral-200 hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:hover:border-neutral-700',
+        ? 'border-border-light opacity-60 dark:border-primary-700/50'
+        : 'border-border-light hover:border-neutral-300 hover:shadow-sm dark:border-primary-700/50 dark:hover:border-neutral-700',
     )}>
       <div className="flex items-center gap-3 px-4 py-3">
         {/* Checkbox */}
@@ -369,11 +369,11 @@ function TaskRow({ task, onToggle, onEdit, onDelete }: {
           className={cn(
             'flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border-2 transition-all',
             done
-              ? 'border-neutral-900 bg-neutral-900 dark:border-white dark:bg-white'
+              ? 'border-neutral-900 bg-primary-800 dark:border-white dark:bg-white'
               : 'border-neutral-300 hover:border-neutral-600 dark:border-neutral-600',
           )}>
           {done && (
-            <svg className="h-3 w-3 text-white dark:text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-3 w-3 text-white dark:text-primary-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
             </svg>
           )}
@@ -382,20 +382,20 @@ function TaskRow({ task, onToggle, onEdit, onDelete }: {
         {/* Info */}
         <div className="flex-1 min-w-0" onClick={() => task.subtasks && setOpen(!open)} style={{ cursor: task.subtasks ? 'pointer' : 'default' }}>
           <div className="flex flex-wrap items-center gap-2">
-            <span className={cn('text-sm font-semibold', done ? 'text-neutral-400 line-through' : 'text-neutral-900 dark:text-neutral-100')}>
+            <span className={cn('text-sm font-semibold', done ? 'text-primary-400 line-through' : 'text-primary-900 dark:text-neutral-100')}>
               {task.title}
             </span>
             <Badge variant={({ urgent:'urgent', high:'high', medium:'medium', low:'low' } as any)[task.priority]}>
               {({ urgent:'Shoshilinch', high:'Yuqori', medium:"O'rta", low:'Past' } as any)[task.priority]}
             </Badge>
-            <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-semibold text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
+            <span className="rounded-full bg-primary-50 px-2 py-0.5 text-xs font-semibold text-primary-500 dark:bg-primary-700/60 dark:text-primary-400">
               {task.category}
             </span>
           </div>
           {task.dueDate && (
             <div className="mt-0.5 flex items-center gap-1">
-              <Clock className="h-3 w-3 text-neutral-400" />
-              <span className="text-xs text-neutral-400">{formatDate(task.dueDate)}</span>
+              <Clock className="h-3 w-3 text-primary-400" />
+              <span className="text-xs text-primary-400">{formatDate(task.dueDate)}</span>
             </div>
           )}
         </div>
@@ -403,7 +403,7 @@ function TaskRow({ task, onToggle, onEdit, onDelete }: {
         {/* Subtask indicator */}
         {task.subtasks && (
           <button onClick={() => setOpen(!open)}
-            className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800 transition-colors">
+            className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold text-primary-400 hover:bg-primary-50 hover:text-primary-700 dark:hover:bg-primary-700/60 transition-colors">
             {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
             {open ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
           </button>
@@ -412,11 +412,11 @@ function TaskRow({ task, onToggle, onEdit, onDelete }: {
         {/* Actions */}
         <div className="flex flex-shrink-0 items-center gap-1">
           <button onClick={() => onEdit(task)}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-neutral-200">
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-primary-400 transition-colors hover:bg-primary-50 hover:text-primary-700 dark:hover:bg-primary-700/60 dark:hover:text-primary-200">
             <Edit3 className="h-3.5 w-3.5" />
           </button>
           <button onClick={() => onDelete(task.id)}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30">
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-primary-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/30">
             <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
@@ -424,15 +424,15 @@ function TaskRow({ task, onToggle, onEdit, onDelete }: {
 
       {/* Subtasks */}
       {open && task.subtasks && (
-        <div className="border-t border-neutral-100 px-4 py-3 dark:border-neutral-800">
+        <div className="border-t border-border-light px-4 py-3 dark:border-primary-700/50">
           <div className="space-y-2 pl-8">
             {task.subtasks.map((sub, i) => (
               <div key={i} className="flex items-center gap-2">
                 <div className={cn('h-3.5 w-3.5 flex-shrink-0 rounded border flex items-center justify-center',
-                  sub.done ? 'border-neutral-900 bg-neutral-900 dark:border-white dark:bg-white' : 'border-neutral-300 dark:border-neutral-600')}>
-                  {sub.done && <svg className="h-2 w-2 text-white dark:text-neutral-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                  sub.done ? 'border-neutral-900 bg-primary-800 dark:border-white dark:bg-white' : 'border-neutral-300 dark:border-neutral-600')}>
+                  {sub.done && <svg className="h-2 w-2 text-white dark:text-primary-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                 </div>
-                <span className={cn('text-xs font-medium', sub.done ? 'text-neutral-400 line-through' : 'text-neutral-600 dark:text-neutral-400')}>
+                <span className={cn('text-xs font-medium', sub.done ? 'text-primary-400 line-through' : 'text-primary-600 dark:text-primary-400')}>
                   {sub.title}
                 </span>
               </div>

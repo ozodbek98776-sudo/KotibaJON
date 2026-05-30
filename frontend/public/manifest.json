@@ -1,0 +1,16 @@
+{
+  "name": "KOTIBAJON — Shaxsiy Raqamli Kotiba",
+  "short_name": "KOTIBAJON",
+  "description": "Vazifalar, moliya, maqsadlar va muhim sanalarni bitta platformada boshqaring",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F0FDF4",
+  "theme_color": "#059669",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "categories": ["productivity", "utilities"],
+  "lang": "uz"
+}
