@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+    border-color: theme('colors.neutral.200');
+  }
+  .dark * {
+    border-color: theme('colors.neutral.800');
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100;
+    font-family: 'Nunito', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-extrabold tracking-tight;
+  }
+
+  a {
+    @apply no-underline;
+    color: inherit;
+  }
+
+  ::-webkit-scrollbar       { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-neutral-300 dark:bg-neutral-700 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-neutral-400 dark:bg-neutral-600; }
+
+  ::selection { @apply bg-amber-200/50 dark:bg-amber-900/30; }
+
+  *:focus-visible {
+    @apply outline-none ring-2 ring-amber-400 ring-offset-2;
+  }
+}
+
+@layer components {
+  .no-scrollbar                          { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar       { display: none; }
+
+  .text-gradient-accent {
+    background: linear-gradient(135deg, #D97706, #FBBF24);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .dot-pattern {
+    background-image: radial-gradient(rgb(0 0 0 / 5%) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .dark .dot-pattern {
+    background-image: radial-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px);
+  }
+
+  .grid-pattern {
+    background-image:
+      linear-gradient(rgb(0 0 0 / 4%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(0 0 0 / 4%) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .dark .grid-pattern {
+    background-image:
+      linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
+  }
+}
