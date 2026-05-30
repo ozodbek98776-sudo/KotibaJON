@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Nunito } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from 'next-themes'
@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   title: 'KOTIBAJON — Shaxsiy Raqamli Kotiba',
   description: "Vaqtingizni, maqsadlaringizni va resurslaringizni samarali boshqaring. O'zbekiston uchun yaratilgan shaxsiy samaradorlik platformasi.",
   keywords: "vazifa boshqaruvi, moliya, maqsadlar, eslatmalar, O'zbekiston, productivity",
-  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -40,7 +39,13 @@ export const metadata: Metadata = {
       { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
     ],
   },
-  themeColor: '#2563EB',
+}
+
+export const viewport: Viewport = {
+  themeColor: '#F59E0B',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
