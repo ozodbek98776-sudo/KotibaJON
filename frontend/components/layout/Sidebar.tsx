@@ -1,37 +1,86 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard, CheckSquare, DollarSign, Target,
-  Calendar, BarChart3, Settings, LogOut, ChevronLeft, ChevronRight,
+  Calendar, BarChart3, Settings, LogOut,
+  ChevronLeft, ChevronRight,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { KotibaLogo, KotibaIcon } from '@/components/ui/KotibaLogo'
 
 const nav = [
-  { href: '/dashboard', label: 'Dashboard',    icon: LayoutDashboard },
-  { href: '/tasks',     label: 'Vazifalar',     icon: CheckSquare },
-  { href: '/finance',   label: 'Moliya',         icon: DollarSign },
-  { href: '/goals',     label: 'Maqsadlar',      icon: Target },
-  { href: '/dates',     label: 'Muhim Sanalar',  icon: Calendar },
-  { href: '/reports',   label: 'Hisobotlar',     icon: BarChart3 },
+  { href: '/dashboard', label: 'Dashboard',   icon: LayoutDashboard },
+  { href: '/tasks',     label: 'Vazifalar',    icon: CheckSquare },
+  { href: '/finance',   label: 'Moliya',        icon: DollarSign },
+  { href: '/goals',     label: 'Maqsadlar',     icon: Target },
+  { href: '/dates',     label: 'Muhim Sanalar', icon: Calendar },
+  { href: '/reports',   label: 'Hisobotlar',    icon: BarChart3 },
 ]
 
+/* ── Helpers ──────────────────────────────────────────────────── */
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/)
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+  if (parts[0]?.length) return parts[0].slice(0, 2).toUpperCase()
+  return '?'
+}
+
+function shortName(name: string) {
+  const parts = name.trim().split(/\s+/)
+  if (parts.length >= 2) return `${parts[0]} ${parts[1][0]}.`
+  return parts[0] || 'Foydalanuvchi'
+}
+
+/* ── Component ────────────────────────────────────────────────── */
 export function Sidebar() {
   const pathname = usePathname()
+  const router   = useRouter()
   const [collapsed, setCollapsed] = useState(false)
+  const [user, setUser] = useState({ name: '', email: '', plan: '' })
+
+  // Read user info from localStorage (client-side only)
+  useEffect(() => {
+    const name  = localStorage.getItem('kj_name')  || ''
+    const email = localStorage.getItem('kj_email') || ''
+    const plan  = localStorage.getItem('kj_plan')  || 'Bepul tarif'
+    setUser({ name, email, plan })
+
+    // Listen for storage changes (e.g. settings page update)
+    const onStorage = () => {
+      setUser({
+        name:  localStorage.getItem('kj_name')  || '',
+        email: localStorage.getItem('kj_email') || '',
+        plan:  localStorage.getItem('kj_plan')  || 'Bepul tarif',
+      })
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
+
+  function handleLogout() {
+    localStorage.removeItem('kj_name')
+    localStorage.removeItem('kj_email')
+    localStorage.removeItem('kj_plan')
+    router.push('/')
+  }
+
+  const displayName = user.name ? shortName(user.name) : 'Foydalanuvchi'
+  const avatar      = user.name ? initials(user.name)  : '?'
+  const planLabel   = user.plan || 'Bepul tarif'
+  const planColor   = planLabel === 'Pro tarif' || planLabel === 'Premium tarif'
+    ? 'text-amber-500'
+    : 'text-neutral-500'
 
   return (
-    <aside
-      className={cn(
-        'relative flex flex-col h-screen flex-shrink-0 transition-all duration-300',
-        'bg-neutral-900 dark:bg-neutral-950',
-        'border-r border-neutral-800',
-        collapsed ? 'w-16' : 'w-60',
-      )}
-    >
+    <aside className={cn(
+      'relative flex flex-col h-screen flex-shrink-0 transition-all duration-300',
+      'bg-neutral-900 dark:bg-neutral-950 border-r border-neutral-800',
+      collapsed ? 'w-16' : 'w-60',
+    )}>
+
       {/* Logo */}
       <div className={cn(
         'flex items-center h-[60px] border-b border-neutral-800',
@@ -45,7 +94,7 @@ export function Sidebar() {
 
       {/* Collapse btn */}
       <button
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => setCollapsed(v => !v)}
         className="absolute -right-3 top-[52px] z-20 flex h-6 w-6 items-center justify-center rounded-full border border-neutral-700 bg-neutral-800 text-neutral-400 hover:border-neutral-500 hover:text-white transition-colors"
       >
         {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
@@ -82,6 +131,7 @@ export function Sidebar() {
 
       {/* Bottom */}
       <div className="border-t border-neutral-800 px-2 py-3 space-y-0.5">
+        {/* Settings */}
         <Link
           href="/settings"
           className={cn(
@@ -96,26 +146,37 @@ export function Sidebar() {
           {!collapsed && <span>Sozlamalar</span>}
         </Link>
 
-        <button
-          className={cn(
-            'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold transition-all duration-150 text-left',
-            'text-neutral-400 hover:bg-neutral-800 hover:text-white',
-            collapsed && 'justify-center px-0',
-          )}
-        >
-          <div className="h-8 w-8 flex-shrink-0 rounded-full bg-neutral-700 flex items-center justify-center text-xs font-extrabold text-white">
-            ST
+        {/* User profile */}
+        <div className={cn(
+          'flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-150 cursor-default',
+          collapsed && 'justify-center px-0',
+        )}>
+          {/* Avatar */}
+          <div className="h-8 w-8 flex-shrink-0 rounded-full bg-neutral-700 flex items-center justify-center text-[11px] font-extrabold text-white select-none">
+            {avatar}
           </div>
+
           {!collapsed && (
             <>
               <div className="flex-1 min-w-0">
-                <p className="truncate text-sm font-extrabold text-white leading-tight">Sardor T.</p>
-                <p className="truncate text-[11px] font-bold text-amber-500">Pro tarif</p>
+                <p className="truncate text-sm font-extrabold text-white leading-tight">
+                  {displayName}
+                </p>
+                <p className={cn('truncate text-[11px] font-bold', planColor)}>
+                  {planLabel}
+                </p>
               </div>
-              <LogOut className="h-[15px] w-[15px] flex-shrink-0 text-neutral-600" />
+              {/* Logout */}
+              <button
+                onClick={handleLogout}
+                title="Chiqish"
+                className="flex-shrink-0 text-neutral-600 hover:text-red-400 transition-colors p-0.5 rounded"
+              >
+                <LogOut className="h-[15px] w-[15px]" />
+              </button>
             </>
           )}
-        </button>
+        </div>
       </div>
     </aside>
   )

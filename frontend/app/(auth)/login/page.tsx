@@ -61,6 +61,16 @@ export default function LoginPage() {
     if (!validate()) return
     setLoading(true)
     await new Promise(r => setTimeout(r, 1200))
+    // Save email; derive name from email prefix if not set yet
+    localStorage.setItem('kj_email', form.email.trim())
+    if (!localStorage.getItem('kj_name')) {
+      const prefix = form.email.split('@')[0]
+      const name = prefix.charAt(0).toUpperCase() + prefix.slice(1)
+      localStorage.setItem('kj_name', name)
+    }
+    if (!localStorage.getItem('kj_plan')) {
+      localStorage.setItem('kj_plan', 'Bepul tarif')
+    }
     toast.success('Xush kelibsiz!')
     window.location.href = '/dashboard'
   }

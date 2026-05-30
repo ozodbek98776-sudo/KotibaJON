@@ -95,6 +95,10 @@ export default function RegisterPage() {
     if (!validateStep1()) return
     setLoading(true)
     await new Promise(r => setTimeout(r, 1400))
+    // Save user data to localStorage
+    localStorage.setItem('kj_name',  form.name.trim())
+    localStorage.setItem('kj_email', form.email.trim())
+    localStorage.setItem('kj_plan',  'Bepul tarif')
     setLoading(false)
     go(2)
   }
