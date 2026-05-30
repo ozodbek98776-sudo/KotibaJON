@@ -7,6 +7,18 @@ const config: Config = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: [
+    'bg-emerald-500', 'bg-emerald-600', 'hover:bg-emerald-600',
+    'bg-amber-500',   'bg-amber-600',   'hover:bg-amber-600',
+    'bg-red-500',     'bg-red-600',     'hover:bg-red-600',
+    'bg-neutral-900', 'bg-neutral-700',
+    'bg-primary-500', 'bg-primary-600',
+    'text-white', 'text-emerald-600', 'text-emerald-400',
+    'border-emerald-500',
+    'rounded-button', 'rounded-card',
+    'from-blue-700', 'via-blue-600', 'to-sky-400',
+    'bg-gradient-to-br',
+  ],
   theme: {
     extend: {
       colors: {

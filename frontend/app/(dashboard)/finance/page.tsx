@@ -102,37 +102,36 @@ export default function FinancePage() {
       </div>
 
       {/* ── Balance card (gradient) ─────────────────────────────── */}
-      <div
-        className="rounded-2xl p-6 text-white relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #0EA5E9 100%)', boxShadow: '0 8px 32px rgba(37,99,235,0.30)' }}
-      >
-        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full opacity-10 bg-white" />
-        <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full opacity-10 bg-white" />
+      <div className="rounded-2xl p-6 text-white relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-sky-400"
+        style={{ boxShadow: '0 8px 32px rgba(37,99,235,0.35)' }}>
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white opacity-10 pointer-events-none" />
+        <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-white opacity-10 pointer-events-none" />
 
         <div className="relative z-10 flex items-center justify-between mb-6">
           <div>
             <p className="text-blue-100 text-sm font-medium mb-1">Joriy balans</p>
-            <p className="text-4xl font-black font-mono tracking-tight">{formatCurrency(balance)}</p>
+            <p className="text-4xl font-black font-mono tracking-tight text-white">{formatCurrency(balance)}</p>
           </div>
-          <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center"
+            style={{ background: 'rgba(255,255,255,0.20)' }}>
             <Wallet className="w-7 h-7 text-white" />
           </div>
         </div>
 
         <div className="relative z-10 grid grid-cols-2 gap-3">
-          <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3.5 border border-white/20">
+          <div className="rounded-xl p-3.5" style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.25)' }}>
             <div className="flex items-center gap-2 mb-1.5">
               <ArrowUpRight className="w-4 h-4 text-green-300" />
               <span className="text-xs text-blue-100 font-medium">Daromad</span>
             </div>
-            <p className="font-black font-mono text-lg">{formatCurrency(totalIncome)}</p>
+            <p className="font-black font-mono text-lg text-white">{formatCurrency(totalIncome)}</p>
           </div>
-          <div className="bg-white/15 backdrop-blur-sm rounded-xl p-3.5 border border-white/20">
+          <div className="rounded-xl p-3.5" style={{ background: 'rgba(255,255,255,0.18)', border: '1px solid rgba(255,255,255,0.25)' }}>
             <div className="flex items-center gap-2 mb-1.5">
               <ArrowDownRight className="w-4 h-4 text-red-300" />
               <span className="text-xs text-blue-100 font-medium">Xarajat</span>
             </div>
-            <p className="font-black font-mono text-lg">{formatCurrency(totalExpense)}</p>
+            <p className="font-black font-mono text-lg text-white">{formatCurrency(totalExpense)}</p>
           </div>
         </div>
       </div>
