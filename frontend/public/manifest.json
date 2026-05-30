@@ -1,16 +1,104 @@
 {
   "name": "KOTIBAJON — Shaxsiy Raqamli Kotiba",
   "short_name": "KOTIBAJON",
-  "description": "Vazifalar, moliya, maqsadlar va muhim sanalarni bitta platformada boshqaring",
-  "start_url": "/",
+  "description": "Vazifalar, moliya, maqsadlar va muhim sanalarni bitta aqlli platformada boshqaring. O'zbekiston uchun.",
+  "start_url": "/dashboard",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#F0FDF4",
-  "theme_color": "#059669",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "background_color": "#0F172A",
+  "theme_color": "#2563EB",
   "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "categories": ["productivity", "utilities", "finance"],
+  "lang": "uz",
+  "dir": "ltr",
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
-  "categories": ["productivity", "utilities"],
-  "lang": "uz"
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop.png",
+      "sizes": "1440x900",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "KOTIBAJON Dashboard"
+    },
+    {
+      "src": "/screenshots/mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "KOTIBAJON Mobile"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Vazifalar",
+      "short_name": "Vazifalar",
+      "description": "Bugungi vazifalar",
+      "url": "/tasks",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Moliya",
+      "short_name": "Moliya",
+      "description": "Moliya nazorati",
+      "url": "/finance",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    }
+  ]
 }
