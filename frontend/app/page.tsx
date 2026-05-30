@@ -1,10 +1,11 @@
 import Link from 'next/link'
 import {
   CheckSquare, DollarSign, Target, Calendar,
-  Bell, BarChart3, Zap, ArrowRight,
+  Bell, BarChart3, ArrowRight,
   Check, Star, Shield, Globe,
-  TrendingUp, Users, Award, Sparkles,
+  Users, Award, Sparkles, Zap,
 } from 'lucide-react'
+import { KotibaLogo } from '@/components/ui/KotibaLogo'
 
 const features = [
   { icon: CheckSquare, title: 'Vazifalar Boshqaruvi',  desc: 'Kunlik, haftalik va oylik vazifalaringizni tartibli boshqaring. Kanban, ro\'yxat va kalendar ko\'rinishlari.' },
@@ -58,29 +59,46 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#09090B] text-neutral-900 dark:text-neutral-100">
 
       {/* ── NAVBAR ──────────────────────────────────────────────── */}
-      <nav className="sticky top-0 z-50 bg-white/80 dark:bg-[#09090B]/90 backdrop-blur-md border-b border-neutral-200 dark:border-[#1F1F1F]">
-        <div className="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#0F0F0F] dark:bg-white flex items-center justify-center"
-                 style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.20)' }}>
-              <Zap className="w-4 h-4 text-white dark:text-[#0F0F0F]" />
-            </div>
-            <span className="text-[17px] font-black tracking-tight text-neutral-900 dark:text-white">KOTIBAJON</span>
-          </div>
+      <nav className="sticky top-0 z-50 bg-white/90 dark:bg-[#09090B]/95 backdrop-blur-xl border-b border-neutral-100 dark:border-[#1A1A1A]"
+           style={{ boxShadow: '0 1px 0 rgba(0,0,0,0.06)' }}>
+        <div className="max-w-7xl mx-auto px-5 h-[60px] flex items-center justify-between gap-6">
 
-          <div className="hidden md:flex items-center gap-8">
-            {[['#features','Xususiyatlar'], ['#pricing','Narxlar'], ['#reviews','Fikrlar']].map(([href,label]) => (
-              <a key={href} href={href} className="text-sm font-semibold text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors">{label}</a>
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0 hover:opacity-85 transition-opacity">
+            <KotibaLogo size={34} />
+          </Link>
+
+          {/* Nav links — desktop */}
+          <div className="hidden md:flex items-center gap-1">
+            {[['#features','Xususiyatlar'], ['#pricing','Narxlar'], ['#reviews','Fikrlar']].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="px-3 py-1.5 text-sm font-semibold text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-[#111] rounded-lg transition-all"
+              >
+                {label}
+              </a>
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm font-bold text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors">
+          {/* CTA */}
+          <div className="flex items-center gap-2.5 flex-shrink-0">
+            <Link
+              href="/login"
+              className="hidden sm:block px-3.5 py-1.5 text-sm font-bold text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors rounded-lg hover:bg-neutral-100 dark:hover:bg-[#111]"
+            >
               Kirish
             </Link>
-            <Link href="/register" className="h-9 px-4 inline-flex items-center gap-1.5 bg-[#0F0F0F] dark:bg-white text-white dark:text-[#0F0F0F] text-sm font-bold rounded-lg transition-all hover:bg-[#1c1c1c] dark:hover:bg-neutral-100"
-                  style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }}>
-              Boshlash <ArrowRight className="w-3.5 h-3.5" />
+            <Link
+              href="/register"
+              className="h-9 px-4 inline-flex items-center gap-1.5 text-white text-sm font-bold rounded-lg transition-all"
+              style={{
+                background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                boxShadow: '0 2px 8px rgba(37,99,235,0.35)',
+              }}
+            >
+              Boshlash
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
@@ -312,15 +330,10 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ──────────────────────────────────────────────── */}
-      <footer className="border-t border-neutral-200 dark:border-[#1F1F1F] py-8 px-5">
+      <footer className="border-t border-neutral-200 dark:border-[#1A1A1A] py-8 px-5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-[#0F0F0F] dark:bg-white flex items-center justify-center">
-              <Zap className="w-3 h-3 text-white dark:text-[#0F0F0F]" />
-            </div>
-            <span className="font-black text-neutral-900 dark:text-white text-sm">KOTIBAJON</span>
-          </div>
-          <p className="text-xs font-medium text-neutral-400">© 2025 KOTIBAJON. Barcha huquqlar himoyalangan.</p>
+          <KotibaLogo size={28} />
+          <p className="text-xs font-medium text-neutral-400">© 2026 KOTIBAJON. Barcha huquqlar himoyalangan.</p>
           <div className="flex items-center gap-5">
             {['Maxfiylik', 'Shartlar', 'Aloqa'].map(l => (
               <a key={l} href="#" className="text-xs font-semibold text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors">{l}</a>

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, Search, Sun, Moon, Plus, Menu, X, Zap } from 'lucide-react'
+import { Bell, Search, Sun, Moon, Plus, Menu, X } from 'lucide-react'
+import { KotibaLogo } from '@/components/ui/KotibaLogo'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
@@ -32,11 +33,8 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
           </button>
         )}
         {/* Mobile logo */}
-        <div className="flex items-center gap-2 lg:hidden">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500">
-            <Zap className="h-3.5 w-3.5 text-white" />
-          </div>
-          <span className="text-sm font-extrabold tracking-tight text-neutral-900 dark:text-white">KOTIBAJON</span>
+        <div className="lg:hidden">
+          <KotibaLogo size={28} />
         </div>
       </div>
 

@@ -5,9 +5,10 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   LayoutDashboard, CheckSquare, DollarSign, Target,
-  Calendar, BarChart3, Settings, LogOut, ChevronLeft, ChevronRight, Zap,
+  Calendar, BarChart3, Settings, LogOut, ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import { useState } from 'react'
+import { KotibaLogo, KotibaIcon } from '@/components/ui/KotibaLogo'
 
 const nav = [
   { href: '/dashboard', label: 'Dashboard',    icon: LayoutDashboard },
@@ -33,18 +34,13 @@ export function Sidebar() {
     >
       {/* Logo */}
       <div className={cn(
-        'flex items-center gap-3 h-16 border-b border-neutral-800',
-        collapsed ? 'justify-center px-3' : 'px-5',
+        'flex items-center h-[60px] border-b border-neutral-800',
+        collapsed ? 'justify-center px-3' : 'px-4',
       )}>
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500 flex-shrink-0 shadow-amber">
-          <Zap className="h-4 w-4 text-white" />
-        </div>
-        {!collapsed && (
-          <div className="min-w-0">
-            <p className="text-sm font-extrabold tracking-tight text-white leading-none">KOTIBAJON</p>
-            <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-neutral-500">Kotiba</p>
-          </div>
-        )}
+        {collapsed
+          ? <KotibaIcon size={30} className="opacity-90" />
+          : <KotibaLogo size={30} variant="white" />
+        }
       </div>
 
       {/* Collapse btn */}
