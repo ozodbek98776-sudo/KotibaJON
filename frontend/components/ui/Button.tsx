@@ -10,14 +10,40 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary:  'bg-primary-500 hover:bg-primary-600 text-white [box-shadow:0_3px_10px_rgba(5,150,105,0.30)] hover:[box-shadow:0_5px_16px_rgba(5,150,105,0.40)]',
-        accent:   'bg-accent-500 hover:bg-accent-600 text-white [box-shadow:0_3px_10px_rgba(245,158,11,0.30)]',
-        outline:  'border-2 border-primary-500 text-primary-600 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-900/30',
-        ghost:    'text-primary-600 hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-900/30',
-        danger:   'bg-red-500 hover:bg-red-600 text-white [box-shadow:0_3px_10px_rgba(239,68,68,0.25)]',
-        success:  'bg-emerald-500 hover:bg-emerald-600 text-white',
-        dark:     'bg-primary-800 hover:bg-primary-900 text-white dark:bg-primary-700',
-        link:     'text-primary-500 hover:underline p-0 h-auto shadow-none',
+        primary: [
+          'bg-emerald-500 hover:bg-emerald-600 text-white',
+          '[box-shadow:0_3px_10px_rgba(16,185,129,0.30)]',
+          'hover:[box-shadow:0_5px_16px_rgba(16,185,129,0.40)]',
+        ],
+        accent: [
+          'bg-amber-500 hover:bg-amber-600 text-white',
+          '[box-shadow:0_3px_10px_rgba(245,158,11,0.30)]',
+          'hover:[box-shadow:0_5px_16px_rgba(245,158,11,0.40)]',
+        ],
+        outline: [
+          'border-2 border-emerald-500 text-emerald-600',
+          'hover:bg-emerald-50',
+          'dark:border-emerald-500 dark:text-emerald-400',
+          'dark:hover:bg-emerald-500/[0.10]',
+        ],
+        ghost: [
+          'text-neutral-600 hover:bg-neutral-100',
+          'dark:text-neutral-300 dark:hover:bg-white/[0.07]',
+        ],
+        danger: [
+          'bg-red-500 hover:bg-red-600 text-white',
+          '[box-shadow:0_3px_10px_rgba(239,68,68,0.25)]',
+        ],
+        success: 'bg-emerald-500 hover:bg-emerald-600 text-white',
+        dark: [
+          'bg-neutral-900 hover:bg-neutral-800 text-white',
+          'dark:bg-neutral-700 dark:hover:bg-neutral-600',
+        ],
+        link: 'text-emerald-600 dark:text-emerald-400 hover:underline p-0 h-auto shadow-none',
+        secondary: [
+          'bg-neutral-100 hover:bg-neutral-200 text-neutral-700',
+          'dark:bg-white/[0.07] dark:hover:bg-white/[0.12] dark:text-neutral-200',
+        ],
       },
       size: {
         xs:   'h-7  px-2.5 text-xs  rounded-lg',

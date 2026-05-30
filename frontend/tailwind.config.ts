@@ -10,7 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Neutral blacks (primary UI color)
+        // ── Neutral (base UI) ─────────────────────────────────
         neutral: {
           50:  '#FAFAFA',
           100: '#F5F5F5',
@@ -24,7 +24,37 @@ const config: Config = {
           900: '#171717',
           950: '#0A0A0A',
         },
-        // Amber accent
+
+        // ── Primary (emerald — interactive elements) ──────────
+        primary: {
+          50:  '#ECFDF5',
+          100: '#D1FAE5',
+          200: '#A7F3D0',
+          300: '#6EE7B7',
+          400: '#34D399',
+          500: '#10B981',
+          600: '#059669',
+          700: '#047857',
+          800: '#065F46',
+          900: '#064E3B',
+          950: '#022C22',
+        },
+
+        // ── Accent (amber — highlights & CTA) ─────────────────
+        accent: {
+          50:  '#FFFBEB',
+          100: '#FEF3C7',
+          200: '#FDE68A',
+          300: '#FCD34D',
+          400: '#FBBF24',
+          500: '#F59E0B',
+          600: '#D97706',
+          700: '#B45309',
+          800: '#92400E',
+          900: '#78350F',
+        },
+
+        // ── Amber (duplicate for direct use) ──────────────────
         amber: {
           50:  '#FFFBEB',
           100: '#FEF3C7',
@@ -37,7 +67,8 @@ const config: Config = {
           800: '#92400E',
           900: '#78350F',
         },
-        // Semantic
+
+        // ── Semantic ──────────────────────────────────────────
         green: {
           50:  '#F0FDF4',
           100: '#DCFCE7',
@@ -63,10 +94,24 @@ const config: Config = {
           600: '#2563EB',
           900: '#1E3A8A',
         },
-        // Background shortcuts
-        bg: {
+
+        // ── Border ───────────────────────────────────────────
+        border: {
+          light: '#E5E7EB',
+          dark:  '#27272A',
+          card:  '#F3F4F6',
+        },
+
+        // ── Background ────────────────────────────────────────
+        background: {
           light: '#FAFAFA',
-          dark:  '#0A0A0A',
+          dark:  '#09090B',
+        },
+
+        // ── Surface (card backgrounds) ────────────────────────
+        surface: {
+          light: '#FFFFFF',
+          dark:  '#111111',
         },
       },
 
@@ -76,25 +121,30 @@ const config: Config = {
       },
 
       borderRadius: {
-        sm:  '4px',
-        md:  '8px',
-        lg:  '10px',
-        xl:  '14px',
-        '2xl': '18px',
-        '3xl': '24px',
-        full: '9999px',
+        sm:     '4px',
+        md:     '8px',
+        lg:     '10px',
+        xl:     '14px',
+        '2xl':  '18px',
+        '3xl':  '24px',
+        full:   '9999px',
+        card:   '12px',
+        button: '8px',
       },
 
       boxShadow: {
-        xs:   '0 1px 2px 0 rgb(0 0 0 / 0.05)',
-        sm:   '0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.05)',
-        md:   '0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05)',
-        lg:   '0 8px 20px -3px rgb(0 0 0 / 0.10), 0 4px 8px -4px rgb(0 0 0 / 0.06)',
-        xl:   '0 16px 40px -4px rgb(0 0 0 / 0.12)',
-        amber: '0 4px 14px 0 rgb(245 158 11 / 0.35)',
-        'amber-lg': '0 8px 24px 0 rgb(245 158 11 / 0.40)',
-        dark:  '0 4px 14px 0 rgb(0 0 0 / 0.30)',
-        inner: 'inset 0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        xs:        '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        sm:        '0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.05)',
+        md:        '0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05)',
+        lg:        '0 8px 20px -3px rgb(0 0 0 / 0.10), 0 4px 8px -4px rgb(0 0 0 / 0.06)',
+        xl:        '0 16px 40px -4px rgb(0 0 0 / 0.12)',
+        amber:     '0 4px 14px 0 rgb(245 158 11 / 0.35)',
+        'amber-lg':'0 8px 24px 0 rgb(245 158 11 / 0.40)',
+        dark:      '0 4px 14px 0 rgb(0 0 0 / 0.30)',
+        inner:     'inset 0 1px 2px 0 rgb(0 0 0 / 0.05)',
+        'glow-sm': '0 0 12px rgba(16,185,129,0.20)',
+        'glow':    '0 0 24px rgba(16,185,129,0.30)',
+        'glow-accent': '0 0 20px rgba(245,158,11,0.30)',
       },
 
       animation: {

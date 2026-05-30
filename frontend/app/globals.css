@@ -18,7 +18,7 @@
   }
 
   body {
-    @apply bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100;
+    @apply bg-background-light dark:bg-background-dark text-neutral-900 dark:text-neutral-100;
     font-family: 'Nunito', system-ui, sans-serif;
   }
 
@@ -44,9 +44,21 @@
 }
 
 @layer components {
+  /* ── Scrollbar ──────────────────────────────────────────── */
   .no-scrollbar                          { scrollbar-width: none; }
   .no-scrollbar::-webkit-scrollbar       { display: none; }
 
+  /* ── Page title ─────────────────────────────────────────── */
+  .page-title {
+    @apply text-2xl font-black tracking-tight text-neutral-900 dark:text-white;
+  }
+
+  /* ── Card surface ────────────────────────────────────────── */
+  .card {
+    @apply bg-white dark:bg-[#111111] border border-neutral-200 dark:border-white/[0.08] rounded-xl;
+  }
+
+  /* ── Text utilities ──────────────────────────────────────── */
   .text-gradient-accent {
     background: linear-gradient(135deg, #D97706, #FBBF24);
     -webkit-background-clip: text;
@@ -54,6 +66,7 @@
     background-clip: text;
   }
 
+  /* ── Background patterns ─────────────────────────────────── */
   .dot-pattern {
     background-image: radial-gradient(rgb(0 0 0 / 5%) 1px, transparent 1px);
     background-size: 24px 24px;
@@ -72,5 +85,13 @@
     background-image:
       linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px),
       linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
+  }
+
+  /* ── Select dark mode ────────────────────────────────────── */
+  select {
+    color-scheme: light;
+  }
+  .dark select {
+    color-scheme: dark;
   }
 }

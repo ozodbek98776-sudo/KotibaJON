@@ -107,7 +107,7 @@ const CAT_LIST = ["Sog'liq", 'Moliya', "O'qish", 'Kasbiy', 'Shaxsiy', 'Shaxsiy r
 /* ── Progress bar ───────────────────────────────────────────── */
 function GoalBar({ value, gradFrom, gradTo }: { value: number; gradFrom: string; gradTo: string }) {
   return (
-    <div className="h-2 w-full overflow-hidden rounded-full bg-primary-100 dark:bg-primary-900/40">
+    <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-200 dark:bg-white/[0.08]">
       <div
         className={cn('h-full rounded-full bg-gradient-to-r transition-all duration-700', gradFrom, gradTo)}
         style={{ width: `${Math.min(value, 100)}%` }}
@@ -124,13 +124,13 @@ function fmtValue(val: number, unit: string) {
 /* ── Select style helper ─────────────────────────────────────── */
 const selectCls = [
   'h-10 w-full rounded-lg border px-3 text-sm font-semibold outline-none transition-all',
-  'bg-white dark:bg-primary-900',
-  'border-border-light dark:border-primary-700',
-  'text-primary-900 dark:text-primary-100',
-  'focus:border-primary-400 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-800',
+  'bg-white dark:bg-neutral-900',
+  'border-neutral-200 dark:border-white/[0.10]',
+  'text-neutral-900 dark:text-neutral-100',
+  'focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 dark:focus:ring-emerald-500/20',
 ].join(' ')
 
-const labelCls = 'mb-1.5 block text-sm font-bold text-primary-800 dark:text-primary-200'
+const labelCls = 'mb-1.5 block text-sm font-bold text-neutral-800 dark:text-neutral-200'
 
 /* ================================================================
    PAGE
@@ -297,7 +297,7 @@ export default function GoalsPage() {
               'whitespace-nowrap rounded-full px-3.5 py-1.5 text-sm font-bold transition-all',
               cat === c
                 ? 'bg-primary-500 text-white shadow-glow-sm'
-                : 'bg-primary-50 text-primary-600 hover:bg-primary-100 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50',
+                : 'bg-primary-50 text-primary-600 hover:bg-primary-100 dark:bg-white/[0.05] dark:text-neutral-300 dark:hover:bg-white/[0.09]',
             )}>
             {c}
           </button>
@@ -313,13 +313,14 @@ export default function GoalsPage() {
 
           return (
             <div key={goal.id} className={cn(
-              'group relative overflow-hidden rounded-xl border bg-white transition-all duration-200 dark:bg-primary-800',
-              'border-border-light dark:border-primary-700/50',
-              'hover:border-primary-300 dark:hover:border-primary-600',
+              'group relative overflow-hidden rounded-xl border transition-all duration-200',
+              'bg-white dark:bg-[#111111]',
+              'border-neutral-200 dark:border-white/[0.08]',
+              'hover:border-neutral-300 dark:hover:border-white/[0.15]',
               goal.status === 'paused' && 'opacity-70',
-              goal.status === 'completed' && 'border-emerald-200 dark:border-emerald-700',
+              goal.status === 'completed' && 'border-emerald-200 dark:border-emerald-500/30',
             )}
-            style={{ boxShadow: '0 2px 12px rgba(5,150,105,0.08)' }}>
+            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
               {/* Left accent bar */}
               <div className={cn(
                 'absolute inset-y-0 left-0 w-1 rounded-l-xl bg-gradient-to-b',
@@ -350,13 +351,13 @@ export default function GoalsPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <span className="font-mono text-xl font-black text-primary-800 dark:text-primary-100">
+                    <span className="font-mono text-xl font-black text-primary-800 dark:text-white">
                       {goal.progress}%
                     </span>
                     <button
                       onClick={() => togglePause(goal.id)}
                       title={goal.status === 'paused' ? 'Davom ettirish' : "To'xtatish"}
-                      className="rounded-lg p-1.5 text-primary-300 opacity-0 transition-all hover:bg-primary-50 hover:text-primary-600 group-hover:opacity-100 dark:hover:bg-primary-700/50 dark:hover:text-primary-200"
+                      className="rounded-lg p-1.5 text-neutral-400 opacity-0 transition-all hover:bg-neutral-100 hover:text-neutral-700 group-hover:opacity-100 dark:hover:bg-white/[0.08] dark:hover:text-neutral-200"
                     >
                       {goal.status === 'paused'
                         ? <Play className="h-3.5 w-3.5 text-primary-500" />
@@ -366,11 +367,11 @@ export default function GoalsPage() {
                 </div>
 
                 {/* Title & description */}
-                <h3 className="mb-0.5 text-[15px] font-black tracking-tight text-primary-900 dark:text-primary-50">
+                <h3 className="mb-0.5 text-[15px] font-black tracking-tight text-primary-900 dark:text-white">
                   {goal.title}
                 </h3>
                 {goal.description && (
-                  <p className="mb-3 text-xs text-primary-400 dark:text-primary-500">{goal.description}</p>
+                  <p className="mb-3 text-xs text-primary-400 dark:text-neutral-400">{goal.description}</p>
                 )}
 
                 {/* Progress bar */}
@@ -378,7 +379,7 @@ export default function GoalsPage() {
                   <GoalBar value={goal.progress} gradFrom={goal.gradFrom} gradTo={goal.gradTo} />
                 </div>
                 <div className="flex items-center justify-between text-xs font-semibold">
-                  <span className="text-primary-600 dark:text-primary-300">{fmtValue(goal.current, goal.unit)}</span>
+                  <span className="text-primary-600 dark:text-neutral-300">{fmtValue(goal.current, goal.unit)}</span>
                   <span className="text-primary-400">{fmtValue(goal.target, goal.unit)}</span>
                 </div>
 
@@ -395,7 +396,7 @@ export default function GoalsPage() {
                   <>
                     <button
                       onClick={() => setExp(isOpen ? null : goal.id)}
-                      className="mt-3 flex w-full items-center gap-2 rounded-lg border border-border-light bg-primary-50/60 px-3 py-2 text-xs font-bold text-primary-600 transition-all hover:bg-primary-100 dark:border-primary-700/50 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/50"
+                      className="mt-3 flex w-full items-center gap-2 rounded-lg border border-border-light bg-primary-50/60 px-3 py-2 text-xs font-bold text-primary-600 transition-all hover:bg-primary-100 dark:border-white/[0.08] dark:bg-white/[0.05] dark:text-neutral-300 dark:hover:bg-white/[0.09]"
                     >
                       <div className="flex gap-1">
                         {goal.milestones.map((m, i) => (
@@ -412,7 +413,7 @@ export default function GoalsPage() {
                     </button>
 
                     {isOpen && (
-                      <div className="mt-2 space-y-2 rounded-lg border border-border-light bg-primary-50/60 p-3 dark:border-primary-700/50 dark:bg-primary-900/30">
+                      <div className="mt-2 space-y-2 rounded-lg border border-border-light bg-primary-50/60 p-3 dark:border-white/[0.08] dark:bg-white/[0.05]">
                         {goal.milestones.map((m, i) => (
                           <div key={i} className="flex items-center gap-2.5">
                             {m.done
@@ -422,7 +423,7 @@ export default function GoalsPage() {
                               'flex-1 text-xs font-semibold',
                               m.done
                                 ? 'text-primary-400 line-through dark:text-primary-600'
-                                : 'text-primary-700 dark:text-primary-300',
+                                : 'text-primary-700 dark:text-neutral-300',
                             )}>
                               {m.title}
                             </span>
@@ -437,7 +438,7 @@ export default function GoalsPage() {
                 )}
 
                 {/* Action buttons */}
-                <div className="mt-4 flex gap-2 border-t border-border-light pt-4 dark:border-primary-700/50">
+                <div className="mt-4 flex gap-2 border-t border-border-light pt-4 dark:border-white/[0.08]">
                   {goal.status !== 'completed' && (
                     <Button
                       size="sm"
@@ -468,7 +469,7 @@ export default function GoalsPage() {
       {/* Add CTA */}
       <button
         onClick={() => setAddModal(true)}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary-200 py-5 text-sm font-bold text-primary-400 transition-all hover:border-primary-400 hover:text-primary-600 dark:border-primary-700 dark:hover:border-primary-500 dark:hover:text-primary-300"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-neutral-200 py-5 text-sm font-bold text-neutral-400 transition-all hover:border-emerald-400 hover:text-emerald-600 dark:border-white/[0.10] dark:text-neutral-500 dark:hover:border-emerald-500 dark:hover:text-emerald-400"
       >
         <Plus className="h-5 w-5" /> Yangi maqsad qo'shish
       </button>
@@ -498,16 +499,16 @@ export default function GoalsPage() {
         {progressModal && (
           <div className="space-y-4">
             {/* Current vs Target */}
-            <div className="flex items-center justify-between rounded-xl bg-primary-50 px-4 py-3 dark:bg-primary-900/40">
+            <div className="flex items-center justify-between rounded-xl bg-primary-50 px-4 py-3 dark:bg-white/[0.06]">
               <div>
                 <p className="text-xs font-semibold text-primary-400">Hozirgi holat</p>
-                <p className="text-lg font-black text-primary-900 dark:text-primary-50">
+                <p className="text-lg font-black text-primary-900 dark:text-white">
                   {fmtValue(progressModal.current, progressModal.unit)}
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-xs font-semibold text-primary-400">Maqsad</p>
-                <p className="text-lg font-black text-primary-900 dark:text-primary-50">
+                <p className="text-lg font-black text-primary-900 dark:text-white">
                   {fmtValue(progressModal.target, progressModal.unit)}
                 </p>
               </div>
@@ -517,7 +518,7 @@ export default function GoalsPage() {
             <div>
               <div className="mb-1.5 flex justify-between text-xs font-semibold text-primary-400">
                 <span>Progress</span>
-                <span className="font-black text-primary-800 dark:text-primary-100">
+                <span className="font-black text-primary-800 dark:text-white">
                   {Math.min(Math.round((Number(newProgress || 0) / progressModal.target) * 100), 100)}%
                 </span>
               </div>
@@ -548,7 +549,7 @@ export default function GoalsPage() {
                     <button
                       key={inc}
                       onClick={() => setNewProgress(prev => String(Math.min(100, Number(prev || 0) + inc)))}
-                      className="flex-1 rounded-lg border border-border-light bg-primary-50 py-1.5 text-xs font-bold text-primary-700 transition-all hover:border-primary-400 hover:bg-primary-100 dark:border-primary-700 dark:bg-primary-900/40 dark:text-primary-300"
+                      className="flex-1 rounded-lg border border-border-light bg-primary-50 py-1.5 text-xs font-bold text-primary-700 transition-all hover:border-primary-400 hover:bg-primary-100 dark:border-primary-700 dark:bg-white/[0.06] dark:text-neutral-300"
                     >
                       +{inc}%
                     </button>
