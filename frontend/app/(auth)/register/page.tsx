@@ -114,6 +114,18 @@ export default function RegisterPage() {
           className="hidden lg:flex flex-col justify-between w-[48%] relative overflow-hidden p-12"
           style={{ background: 'linear-gradient(150deg, #022C22 0%, #064E3B 45%, #065F46 100%)' }}
         >
+          {/* Back to home — top left inside left panel */}
+          <div className="relative z-10 flex items-center justify-between">
+            <KotibaLogo size={38} />
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 text-white/60 hover:text-white text-xs font-semibold transition-colors group"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+              Bosh sahifa
+            </Link>
+          </div>
+
           {/* Dot grid */}
           <div className="absolute inset-0 opacity-[0.18]" style={{
             backgroundImage: 'radial-gradient(rgba(167,243,208,0.5) 1px, transparent 1px)',
@@ -127,11 +139,6 @@ export default function RegisterPage() {
                style={{ background: 'radial-gradient(circle, #34D399, transparent 70%)' }} />
           <div className="blob3 absolute top-[38%] left-[35%] w-[250px] h-[250px] rounded-full opacity-[0.10]"
                style={{ background: 'radial-gradient(circle, #A7F3D0, transparent 70%)' }} />
-
-          {/* Logo */}
-          <div className="relative z-10">
-            <KotibaLogo size={38}  />
-          </div>
 
           {/* Middle content */}
           <div className="relative z-10 max-w-[360px]">
@@ -180,8 +187,33 @@ export default function RegisterPage() {
         </div>
 
         {/* ── RIGHT PANEL ────────────────────────────────────── */}
-        <div className="flex-1 flex items-center justify-center p-6 lg:p-10" style={{ background: '#F0FDF7' }}>
-          <div className={`w-full max-w-[420px] ${mounted ? 'slide-up' : 'opacity-0'}`} style={{ animationDelay: '0.05s' }}>
+        <div className="flex-1 flex flex-col p-6 lg:p-10" style={{ background: '#F0FDF7' }}>
+
+          {/* Mobile top bar */}
+          <div className="flex items-center justify-between mb-6 lg:hidden">
+            <KotibaLogo size={28} />
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 text-slate-500 hover:text-slate-800 text-xs font-semibold transition-colors group"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+              Bosh sahifa
+            </Link>
+          </div>
+
+          {/* Desktop: back link top-right */}
+          <div className="hidden lg:flex justify-end mb-2">
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 text-slate-400 hover:text-slate-700 text-xs font-semibold transition-colors group"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+              Bosh sahifaga qaytish
+            </Link>
+          </div>
+
+          <div className="flex flex-1 items-center justify-center">
+          <div className={`w-full max-w-[420px] slide-up`} style={{ animationDelay: '0.05s' }}>
 
             {/* Card */}
             <div className="bg-white rounded-2xl shadow-lg border border-emerald-100/80 overflow-hidden">
@@ -468,6 +500,7 @@ export default function RegisterPage() {
                 <Link href="/login" className="text-emerald-600 font-bold hover:underline">Kirish</Link>
               </p>
             )}
+          </div>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, ArrowRight, CheckCircle2 } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react'
 import { KotibaLogo } from '@/components/ui/KotibaLogo'
 import toast from 'react-hot-toast'
 
@@ -89,9 +89,16 @@ export default function LoginPage() {
           <div className="blob3 absolute top-[40%] left-[30%] w-[280px] h-[280px] rounded-full opacity-10"
                style={{ background: 'radial-gradient(circle, #A7F3D0, transparent 70%)' }} />
 
-          {/* Content */}
-          <div className="relative z-10">
-            <KotibaLogo size={38}  />
+          {/* Logo + back link */}
+          <div className="relative z-10 flex items-center justify-between">
+            <KotibaLogo size={38} />
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 text-white/60 hover:text-white text-xs font-semibold transition-colors group"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+              Bosh sahifa
+            </Link>
           </div>
 
           <div className="relative z-10 max-w-sm">
@@ -130,19 +137,37 @@ export default function LoginPage() {
         </div>
 
         {/* ── RIGHT PANEL ────────────────────────────────────── */}
-        <div
-          className="flex-1 flex items-center justify-center p-6 lg:p-10"
-          style={{ background: '#F0FDF7' }}
-        >
+        <div className="flex-1 flex flex-col p-6 lg:p-10" style={{ background: '#F0FDF7' }}>
+
+          {/* Mobile top bar */}
+          <div className="flex items-center justify-between mb-6 lg:hidden">
+            <KotibaLogo size={28} />
+            <Link href="/"
+              className="flex items-center gap-1.5 text-slate-500 hover:text-slate-800 text-xs font-semibold transition-colors group">
+              <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+              Bosh sahifa
+            </Link>
+          </div>
+
+          {/* Desktop back link */}
+          <div className="hidden lg:flex justify-end mb-2">
+            <Link href="/"
+              className="flex items-center gap-1.5 text-slate-400 hover:text-slate-700 text-xs font-semibold transition-colors group">
+              <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+              Bosh sahifaga qaytish
+            </Link>
+          </div>
+
+          <div className="flex flex-1 items-center justify-center">
           <div
-            className={`w-full max-w-[400px] ${mounted ? 'slide-up' : 'opacity-0'}`}
+            className={`w-full max-w-[400px] slide-up`}
             style={{ animationDelay: '0.05s' }}
           >
             {/* Card */}
             <div className="bg-white rounded-2xl p-8 shadow-lg border border-emerald-100/80">
 
-              {/* Mobile logo */}
-              <div className="lg:hidden flex justify-center mb-7">
+              {/* Mobile logo - hidden since top bar shows it */}
+              <div className="lg:hidden flex justify-center mb-7 hidden">
                 <KotibaLogo size={32} />
               </div>
 
@@ -273,6 +298,7 @@ export default function LoginPage() {
                 Ro'yxatdan o'ting
               </Link>
             </p>
+          </div>
           </div>
         </div>
       </div>
