@@ -38,8 +38,8 @@ export function Sidebar() {
         collapsed ? 'justify-center px-3' : 'px-4',
       )}>
         {collapsed
-          ? <KotibaIcon size={30} className="opacity-90" />
-          : <KotibaLogo size={30} variant="white" />
+          ? <KotibaIcon size={32} />
+          : <KotibaLogo size={32} textColor="text-white" />
         }
       </div>
 

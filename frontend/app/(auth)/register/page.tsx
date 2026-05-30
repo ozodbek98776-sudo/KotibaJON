@@ -130,7 +130,7 @@ export default function RegisterPage() {
 
           {/* Logo */}
           <div className="relative z-10">
-            <KotibaLogo size={38} variant="white" />
+            <KotibaLogo size={38}  />
           </div>
 
           {/* Middle content */}

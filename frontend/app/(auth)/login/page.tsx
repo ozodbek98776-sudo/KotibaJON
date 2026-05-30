@@ -91,7 +91,7 @@ export default function LoginPage() {
 
           {/* Content */}
           <div className="relative z-10">
-            <KotibaLogo size={38} variant="white" />
+            <KotibaLogo size={38}  />
           </div>
 
           <div className="relative z-10 max-w-sm">

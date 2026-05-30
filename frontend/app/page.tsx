@@ -197,7 +197,7 @@ export default function LandingPage() {
 
                 {/* The logo itself */}
                 <div className="relative z-10 flex flex-col items-center gap-4">
-                  <KotibaIcon size={200} variant="color" />
+                  <KotibaIcon size={200}  />
                   <div className="text-center">
                     <p className="text-white font-black text-2xl tracking-widest">KOTIBAJON</p>
                     <p className="text-blue-400 text-xs font-semibold tracking-widest uppercase mt-1">
