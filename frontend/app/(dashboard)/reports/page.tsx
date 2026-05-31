@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { useState } from 'react'
-import { BarChart3, TrendingUp, CheckSquare, Target, Download, Calendar } from 'lucide-react'
+import { BarChart3, TrendingUp, CheckSquare, Target, Download, Calendar, Trophy, TrendingDown, AlertTriangle, Flame } from 'lucide-react'
 import { Card, StatCard } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -47,12 +47,12 @@ const activityData = [
   { week: '4-hafta', tasks: 20, goals: 3 },
 ]
 
-const insights = [
-  { icon: '🏆', text: 'Bu oy eng ko\'p bajargan kuningiz: 6 ta vazifa (Juma)', type: 'success' },
-  { icon: '💸', text: 'Oziq-ovqat xarajati o\'tgan oydan 12% oshdi', type: 'warning' },
-  { icon: '🎯', text: 'TypeScript maqsadi deyarli bajarilmoqda (85%)', type: 'info' },
-  { icon: '⚠️', text: 'Oy o\'rtasida 2 kun vazifa bajarilmadi', type: 'warning' },
-  { icon: '🔥', text: 'Sog\'liq maqsadida 7 kunlik streak davom etmoqda!', type: 'success' },
+const insights: { icon: React.ReactNode; text: string; type: string }[] = [
+  { icon: <Trophy className="w-4 h-4"/>,        text: 'Bu oy eng ko\'p bajargan kuningiz: 6 ta vazifa (Juma)', type: 'success' },
+  { icon: <TrendingDown className="w-4 h-4"/>,  text: 'Oziq-ovqat xarajati o\'tgan oydan 12% oshdi',           type: 'warning' },
+  { icon: <Target className="w-4 h-4"/>,        text: 'TypeScript maqsadi deyarli bajarilmoqda (85%)',          type: 'info'    },
+  { icon: <AlertTriangle className="w-4 h-4"/>, text: 'Oy o\'rtasida 2 kun vazifa bajarilmadi',                 type: 'warning' },
+  { icon: <Flame className="w-4 h-4"/>,         text: 'Sog\'liq maqsadida 7 kunlik streak davom etmoqda!',      type: 'success' },
 ]
 
 export default function ReportsPage() {
@@ -226,7 +226,10 @@ export default function ReportsPage() {
                 insight.type === 'info' && 'bg-blue-50 dark:bg-blue-900/20',
               )}
             >
-              <span className="text-lg flex-shrink-0">{insight.icon}</span>
+              <span className={cn('flex-shrink-0 mt-0.5',
+                insight.type==='success'?'text-green-600 dark:text-green-400':
+                insight.type==='warning'?'text-amber-600 dark:text-amber-400':
+                'text-blue-600 dark:text-blue-400')}>{insight.icon}</span>
               <p className={cn(
                 'text-sm',
                 insight.type === 'success' && 'text-green-700 dark:text-green-400',

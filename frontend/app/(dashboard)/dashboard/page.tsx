@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import {
   CheckSquare, DollarSign, Target, TrendingUp,
   Plus, ArrowRight, Clock, Flame, X, Calendar,
+  Gift, Heart, CreditCard,
 } from 'lucide-react'
 import { StatCard } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
@@ -61,7 +62,11 @@ const categoryData = [
 
 const priorityBadge: Record<string, any>    = { urgent:'urgent', high:'high', medium:'medium', low:'low' }
 const priorityLabel: Record<string, string> = { urgent:'Shoshilinch', high:'Yuqori', medium:"O'rta", low:'Past' }
-const dateIcon: Record<string, string>       = { birthday:'🎂', anniversary:'💍', payment:'💳' }
+const dateIconMap: Record<string, React.ReactNode> = {
+  birthday:    <Gift      className="h-4 w-4 text-pink-500"  />,
+  anniversary: <Heart     className="h-4 w-4 text-red-500"   />,
+  payment:     <CreditCard className="h-4 w-4 text-blue-500" />,
+}
 
 /* ── Add task form ───────────────────────────────────────────── */
 const EMPTY = { title: '', description: '', priority: 'medium', time: '' }
@@ -96,7 +101,7 @@ export default function DashboardPage() {
       id: Date.now(), title: addForm.title,
       priority: addForm.priority as any, done: false, time: addForm.time || '--:--',
     }])
-    toast.success("✅ Vazifa qo'shildi!")
+    toast.success("Vazifa qo'shildi!")
     setAddModal(false)
     setAddForm({ ...EMPTY })
   }
@@ -107,7 +112,7 @@ export default function DashboardPage() {
       {/* ── Header ─────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="page-title">{greeting}, Sardor! 👋</h1>
+          <h1 className="page-title">{greeting}, Sardor!</h1>
           <p className="mt-0.5 text-sm text-primary-500 dark:text-primary-400">
             {dateStr} — Bugun {done}/{total} ta vazifa bajarildi
           </p>
@@ -123,7 +128,7 @@ export default function DashboardPage() {
           <Flame className="h-5 w-5 text-accent-600 dark:text-accent-400" />
         </div>
         <div className="flex-1">
-          <p className="text-sm font-black text-accent-800 dark:text-accent-400">7 kunlik streak! 🔥</p>
+          <p className="text-sm font-black text-accent-800 dark:text-accent-400">7 kunlik streak!</p>
           <p className="text-xs text-accent-600/70">Davom eting! Rekordingiz: 15 kun</p>
         </div>
         <span className="font-mono text-2xl font-black text-accent-600 dark:text-accent-400">7</span>
@@ -221,8 +226,8 @@ export default function DashboardPage() {
                 const days = getDaysUntil(item.date)
                 return (
                   <div key={item.id} className="flex items-center gap-3">
-                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary-50 text-lg dark:bg-primary-900/40">
-                      {dateIcon[item.type]}
+                    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-primary-50 dark:bg-primary-900/40">
+                      {dateIconMap[item.type]}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="truncate text-sm font-semibold text-primary-800 dark:text-primary-100">{item.title}</p>
