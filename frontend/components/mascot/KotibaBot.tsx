@@ -411,7 +411,61 @@ function execBrowserCmd(text: string): string | null {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   useVoice  — v3: lang=en-US, simple result processing, reliable
+   TEXT-TO-SPEECH  — Web Speech API SpeechSynthesis
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Global flag — recognition "hey tom"ni o'zidan eshitmasin */
+let ttsActive = false
+
+const WAKE_REPLIES = [
+  "Hello! How can I help you today?",
+  "Hey! What can I do for you?",
+  "Yes, I'm listening.",
+  "Hi there! How can I assist?",
+]
+
+function speakTTS(text: string, onDone?: () => void) {
+  if (typeof window === 'undefined' || !window.speechSynthesis) { onDone?.(); return }
+  window.speechSynthesis.cancel()
+
+  const u       = new SpeechSynthesisUtterance(text)
+  u.lang        = 'en-US'
+  u.rate        = 0.92
+  u.pitch       = 1.08
+  u.volume      = 1
+
+  u.onstart = () => { ttsActive = true }
+  u.onend   = () => { ttsActive = false; onDone?.() }
+  u.onerror = () => { ttsActive = false; onDone?.() }
+
+  const go = () => {
+    const voices = window.speechSynthesis.getVoices()
+    /* Google/Neural/Natural sesli ovozni afzal ko'ramiz */
+    const pick = voices.find(v => v.lang === 'en-US' && /google|natural|neural|premium/i.test(v.name))
+              || voices.find(v => v.lang.startsWith('en-'))
+              || voices[0]
+    if (pick) u.voice = pick
+    window.speechSynthesis.speak(u)
+  }
+
+  if (window.speechSynthesis.getVoices().length > 0) go()
+  else window.speechSynthesis.addEventListener('voiceschanged', go, { once: true })
+}
+
+/* Bajariladigan buyruq natijasini inglizchaga o'giradi */
+function toSpeech(result: string): string {
+  return result
+    .replace(/^✅\s*/, '')
+    .replace(/Google:\s*"(.+)"/, 'Opening Google for $1')
+    .replace(/YouTube:\s*"(.+)"/, 'Playing YouTube for $1')
+    .replace(/Wikipedia:\s*"(.+)"/, 'Opening Wikipedia for $1')
+    .replace(' ochildi', ' is now open')
+    .replace("bo'limiga o'tildi", 'section opened')
+    .replace('Plannerga o\'tildi', 'Planner is now open')
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   useVoice  — v4: auto-start, TTS feedback, no button press needed
    ══════════════════════════════════════════════════════════════════ */
 function useVoice(
   enabled : boolean,
@@ -451,11 +505,13 @@ function useVoice(
       rec.maxAlternatives = 3        // bir nechta variant
 
       rec.onresult = (e: any) => {
-        /* Faqat yangi natijani olamiz (e.resultIndex) */
+        /* Bot o'z ovozini eshitmasin */
+        if (ttsActive) return
+
+        /* Faqat yangi natijani olamiz */
         const batch = e.results[e.resultIndex]
         if (!batch) return
 
-        /* Barcha alternativlarni matn sifatida yig'amiz */
         const alts: string[] = []
         for (let j = 0; j < batch.length; j++) {
           alts.push(batch[j].transcript.toLowerCase().trim())
@@ -463,21 +519,19 @@ function useVoice(
         const tx      = alts[0]
         const isFinal = batch.isFinal
 
-        /* ── WAKE WORD — interim va final ikkalasida ── */
+        /* ── WAKE WORD ── */
         if (stateRef.current === 'listening') {
           if (alts.some(a => WAKE_WORD.test(a))) {
             if (awakeTimer.current) clearTimeout(awakeTimer.current)
             set('awake')
             cb.current.onWake()
-            /* 7 soniya ichida buyruq bo'lmasa — qaytamiz */
             awakeTimer.current = setTimeout(() => {
               if (stateRef.current === 'awake') set('listening')
             }, 7000)
           }
 
-        /* ── BUYRUQ — faqat final natijada ── */
+        /* ── BUYRUQ (faqat final) ── */
         } else if (stateRef.current === 'awake' && isFinal) {
-          /* Wake word so'zini olib tashlash */
           const clean = tx.replace(WAKE_WORD, '').replace(/^\W+/, '').trim()
           if (!clean || clean.length < 2) return
           if (awakeTimer.current) clearTimeout(awakeTimer.current)
@@ -1240,7 +1294,7 @@ export function KotibaBot() {
   const [isLookup,    setLookup]    = useState(false)
   const [isSearching, setSearching] = useState(false)
   const [aiOpen,      setAiOpen]    = useState(false)
-  const [voiceOn,     setVoiceOn]   = useState(false)
+  const [voiceOn,     setVoiceOn]   = useState(true)   // auto-start
   const [voiceState,  setVoiceState]= useState<VoiceState>('off')
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -1269,27 +1323,32 @@ export function KotibaBot() {
 
   /* Voice callbacks */
   const onVoiceWake = useCallback(() => {
-    setMessage('Gapiravering... 🎤')
+    const reply = WAKE_REPLIES[Math.floor(Math.random() * WAKE_REPLIES.length)]
+    setMessage('🎤 ' + reply)
     setLookup(true); setOpen(true); setBadge(false)
-    setEmotion('surprised')
-    setTimeout(() => setEmotion('idle'), 800)
+    setEmotion('happy')
+    /* TTS — bot ovoz chiqaradi */
+    speakTTS(reply)
   }, [])
 
   const onVoiceCmd = useCallback((transcript: string, cmdResult: string | null) => {
     if (cmdResult) {
-      /* Browser command executed — show result in bubble */
       setMessage(cmdResult)
       setLookup(true); setOpen(true)
       setEmotion('happy')
-      setTimeout(() => {
-        setLookup(false); setOpen(false); setEmotion('idle')
-      }, 3500)
+      /* TTS natijasi */
+      speakTTS(toSpeech(cmdResult), () => {
+        setTimeout(() => {
+          setLookup(false); setOpen(false); setEmotion('idle')
+        }, 1000)
+      })
     } else {
-      /* No browser command — route to AI chat */
-      setAiOpen(true)
-      setLookup(false); setOpen(false)
-      /* Inject as user message via custom event */
-      window.dispatchEvent(new CustomEvent('kj-voice-msg', { detail: transcript }))
+      /* AI chat'ga yo'naltiramiz */
+      speakTTS("Let me check that for you.", () => {
+        setAiOpen(true)
+        setLookup(false); setOpen(false)
+        window.dispatchEvent(new CustomEvent('kj-voice-msg', { detail: transcript }))
+      })
     }
   }, [])
 
@@ -1553,17 +1612,22 @@ export function KotibaBot() {
               </svg>
           }
         </button>
-        {/* Mic label */}
-        {voiceState !== 'off' && (
-          <div style={{
-            position:'absolute', bottom:-32, left:'50%', transform:'translateX(-50%)',
-            whiteSpace:'nowrap', fontSize:9, fontWeight:700, zIndex:25, pointerEvents:'none',
-            color: voiceState==='awake' ? '#10b981' : '#818cf8',
-            textShadow:'0 1px 4px rgba(0,0,0,0.5)',
-          }}>
-            {voiceState==='awake' ? '🎤 Gapiravering...' : voiceState==='processing' ? '⚡ Bajarilmoqda...' : '👂 Hey Tom...'}
-          </div>
-        )}
+        {/* Mic status label */}
+        <div style={{
+          position:'absolute', bottom:-30, left:'50%', transform:'translateX(-50%)',
+          whiteSpace:'nowrap', fontSize:9, fontWeight:800, zIndex:25, pointerEvents:'none',
+          color: voiceState==='awake'      ? '#10b981'
+               : voiceState==='processing' ? '#f59e0b'
+               : voiceState==='listening'  ? '#818cf8'
+               : '#9ca3af',
+          textShadow:'0 1px 4px rgba(0,0,0,0.6)',
+          transition:'color .3s ease',
+        }}>
+          {voiceState==='awake'      ? '🎤 Gapiravering...'
+          : voiceState==='processing'? '⚡ Bajarilmoqda...'
+          : voiceState==='listening' ? '👂 Hey Tom'
+          : '🔇 Off'}
+        </div>
 
         {/* Mascot */}
         <div onPointerDown={onPD} onPointerMove={onPM} onPointerUp={onPU}
