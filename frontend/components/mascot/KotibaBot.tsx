@@ -584,7 +584,7 @@ function useVoice(
 }
 
 /* ── Desktop widget opener ──────────────────────────────────────── */
-export function openDesktopWidget() {
+function openDesktopWidget() {
   const sw = window.screen.width
   const sh = window.screen.height
   const ww = 160, wh = 230

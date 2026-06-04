@@ -2,7 +2,18 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { User, Bell, Shield, Palette, Globe, CreditCard, Trash2, LogOut, Moon, Sun, ChevronRight, Camera, Monitor, BellOff, BellRing, CheckCircle2, XCircle, Volume2, VolumeX, Send, Clock, X, Play, Music2, Tv2, Mic, ExternalLink } from 'lucide-react'
-import { openDesktopWidget } from '@/components/mascot/KotibaBot'
+
+function openDesktopWidget() {
+  const sw = window.screen.width
+  const sh = window.screen.height
+  const ww = 160, wh = 230
+  const win = window.open(
+    '/widget',
+    'kotibabot_widget',
+    `width=${ww},height=${wh},left=${sw - ww - 20},top=${sh - wh - 60},titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=yes`,
+  )
+  if (!win) alert('Pop-up bloklandi! Brauzerda pop-up ruxsatini bering va qayta bosing.')
+}
 import { useNotifications, playRingtone, type ScheduledNotif, type RingtoneId, RINGTONES } from '@/hooks/useNotifications'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
