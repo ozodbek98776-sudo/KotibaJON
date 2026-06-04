@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, ArrowLeft, Check, Sparkles } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, ArrowLeft, Check, Sparkles, Zap, Globe, WifiOff, Shield, PartyPopper } from 'lucide-react'
 import { KotibaLogo } from '@/components/ui/KotibaLogo'
 import toast from 'react-hot-toast'
 
@@ -38,11 +38,11 @@ const css = `
 `
 
 /* ── Left panel feature list ─────────────────────────────────── */
-const leftFeatures = [
-  { icon: '🚀', title: 'Bepul boshlang', desc: 'Kredit karta talab qilinmaydi' },
-  { icon: '🇺🇿', title: "O'zbek tilida", desc: "To'liq mahalliylashtirish" },
-  { icon: '📡', title: 'Offline rejim',   desc: 'Internetsiz ham ishlaydi (PWA)' },
-  { icon: '🔒', title: 'Xavfsiz',         desc: 'Sizning ma\'lumotlar shifrlangan' },
+const leftFeatures: { icon: React.ElementType; title: string; desc: string }[] = [
+  { icon: Zap,     title: 'Bepul boshlang', desc: 'Kredit karta talab qilinmaydi' },
+  { icon: Globe,   title: "O'zbek tilida",  desc: "To'liq mahalliylashtirish" },
+  { icon: WifiOff, title: 'Offline rejim',  desc: 'Internetsiz ham ishlaydi (PWA)' },
+  { icon: Shield,  title: 'Xavfsiz',        desc: "Sizning ma'lumotlar shifrlangan" },
 ]
 
 export default function RegisterPage() {
@@ -161,17 +161,22 @@ export default function RegisterPage() {
 
             {/* Feature list */}
             <div className="space-y-3.5">
-              {leftFeatures.map((f, i) => (
-                <div key={f.title}
-                     className="flex items-center gap-3.5 bg-white/8 border border-white/10 rounded-xl px-4 py-3 backdrop-blur-sm"
-                     style={{ animationDelay: `${i * 0.08}s` }}>
-                  <span className="text-2xl">{f.icon}</span>
-                  <div>
-                    <p className="text-white text-sm font-bold leading-tight">{f.title}</p>
-                    <p className="text-emerald-300 text-xs font-medium">{f.desc}</p>
+              {leftFeatures.map((f, i) => {
+                const Icon = f.icon
+                return (
+                  <div key={f.title}
+                       className="flex items-center gap-3.5 bg-white/8 border border-white/10 rounded-xl px-4 py-3 backdrop-blur-sm"
+                       style={{ animationDelay: `${i * 0.08}s` }}>
+                    <div className="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-emerald-300" />
+                    </div>
+                    <div>
+                      <p className="text-white text-sm font-bold leading-tight">{f.title}</p>
+                      <p className="text-emerald-300 text-xs font-medium">{f.desc}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
@@ -462,7 +467,10 @@ export default function RegisterPage() {
                       <Check className="w-10 h-10 text-white" strokeWidth={3} />
                     </div>
 
-                    <h2 className="text-2xl font-black text-slate-900 mb-2 tracking-tight">Tabriklaymiz! 🎉</h2>
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <h2 className="text-2xl font-black text-slate-900 tracking-tight">Tabriklaymiz!</h2>
+                      <PartyPopper className="w-6 h-6 text-emerald-500" />
+                    </div>
                     <p className="text-slate-500 text-sm mb-1">Hisob muvaffaqiyatli yaratildi</p>
                     <p className="text-sm font-bold mb-8" style={{ color: '#059669' }}>
                       Xush kelibsiz, {form.name || 'foydalanuvchi'}!

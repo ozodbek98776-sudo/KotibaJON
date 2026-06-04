@@ -6,17 +6,20 @@ import { cn } from '@/lib/utils'
 import {
   LayoutDashboard, CheckSquare, DollarSign, Target,
   Calendar, BarChart3, Settings, LogOut,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Sparkles, CalendarClock, Flame, BookOpen,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { KotibaLogo, KotibaIcon } from '@/components/ui/KotibaLogo'
 
 const nav = [
-  { href: '/dashboard', label: 'Dashboard',   icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Dashboard',    icon: LayoutDashboard },
   { href: '/tasks',     label: 'Vazifalar',    icon: CheckSquare },
   { href: '/finance',   label: 'Moliya',        icon: DollarSign },
   { href: '/goals',     label: 'Maqsadlar',     icon: Target },
   { href: '/dates',     label: 'Muhim Sanalar', icon: Calendar },
+  { href: '/planner',   label: 'Kun Tartibi',   icon: CalendarClock },
+  { href: '/habits',    label: 'Odatlar',        icon: Flame },
+  { href: '/library',   label: 'Kutubxona',     icon: BookOpen },
   { href: '/reports',   label: 'Hisobotlar',    icon: BarChart3 },
 ]
 
@@ -127,6 +130,9 @@ export function Sidebar() {
             </Link>
           )
         })}
+
+        {/* AI Yordamchi — panel toggle (sahifaga o'tmaydi) */}
+        <AiNavButton collapsed={collapsed} />
       </nav>
 
       {/* Bottom */}
@@ -179,5 +185,48 @@ export function Sidebar() {
         </div>
       </div>
     </aside>
+  )
+}
+
+/* ── AI nav button — toggles floating panel, no page navigation ── */
+function AiNavButton({ collapsed }: { collapsed: boolean }) {
+  const [active, setActive] = useState(false)
+
+  useEffect(() => {
+    const h = () => setActive(v => !v)
+    window.addEventListener('toggle-ai-chat', h)
+    return () => window.removeEventListener('toggle-ai-chat', h)
+  }, [])
+
+  function toggle() {
+    window.dispatchEvent(new CustomEvent('toggle-ai-chat'))
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      title={collapsed ? 'AI Yordamchi' : undefined}
+      className={cn(
+        'w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-bold transition-all duration-150',
+        collapsed && 'justify-center px-0',
+        active
+          ? 'bg-violet-600 text-white shadow-[0_0_16px_rgba(139,92,246,.40)]'
+          : 'text-violet-400 hover:bg-violet-500/10 hover:text-violet-300',
+      )}
+    >
+      <Sparkles className={cn(
+        'h-[18px] w-[18px] flex-shrink-0',
+        !active && 'drop-shadow-[0_0_5px_rgba(139,92,246,.7)]',
+      )} />
+      {!collapsed && (
+        <>
+          <span className="flex-1 text-left">AI Yordamchi</span>
+          {active
+            ? <span className="h-1.5 w-1.5 rounded-full bg-violet-200 animate-pulse" />
+            : <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-400">AI</span>
+          }
+        </>
+      )}
+    </button>
   )
 }

@@ -78,16 +78,7 @@ const TYPE_CFG: Record<DateType, {
 
 /* ── Initial data ────────────────────────────────────────────────── */
 const D = Date.now
-const INIT: ImportantDate[] = [
-  { id:1, title:"Nilufar tug'ilgan kuni",  personName:'Nilufar Rashidova', date:new Date(D()+3*86400000),  type:'birthday',    remindDays:[1,3,7],   notes:"Gul va tort olish kerak", recurring:true,  year:1998 },
-  { id:2, title:"Aka tug'ilgan kuni",      personName:'Bobur aka',         date:new Date(D()+15*86400000), type:'birthday',    remindDays:[3,7],     recurring:true,  year:1990 },
-  { id:3, title:"Nikoh to'yi yillik",      personName:'',                  date:new Date(D()+25*86400000), type:'anniversary', remindDays:[7,14],    notes:'5-yillik',     recurring:true,  year:2021 },
-  { id:4, title:"Ijara to'lovi",                                           date:new Date(D()+5*86400000),  type:'payment',     remindDays:[3],       notes:'800,000 so\'m', recurring:true,  amount:800000 },
-  { id:5, title:"Ota tug'ilgan kuni",      personName:'Otaxon',            date:new Date(D()+45*86400000), type:'birthday',    remindDays:[7,14],    recurring:true,  year:1960 },
-  { id:6, title:'Internet abonement',                                      date:new Date(D()+8*86400000),  type:'payment',     remindDays:[1,3],     recurring:true,  amount:50000 },
-  { id:7, title:'Imtihon kuni',                                            date:new Date(D()+20*86400000), type:'other',       remindDays:[7,14,30], notes:'IT sertifikat imtihoni', recurring:false },
-  { id:8, title:"Mustaqillik kuni",                                        date:new Date(D()+90*86400000), type:'holiday',     remindDays:[1],       recurring:true },
-]
+const INIT: ImportantDate[] = []
 
 const REMIND_OPTIONS = [1, 3, 7, 14, 30]
 const SEL = cn(

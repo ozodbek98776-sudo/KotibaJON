@@ -1,18 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, Search, Sun, Moon, Plus, Menu, X } from 'lucide-react'
+import { Bell, Search, Sun, Moon, Plus, Menu, X, Stethoscope, AlertTriangle, Cake, Flame } from 'lucide-react'
 import { KotibaLogo } from '@/components/ui/KotibaLogo'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 
-const notifications = [
-  { id: 1, text: "Bugun soat 14:00 — Doktor bilan uchrashuv", time: "10 daqiqa oldin", read: false, icon: '🏥' },
-  { id: 2, text: "Oylik byudjet 80% dan oshdi", time: "1 soat oldin", read: false, icon: '⚠️' },
-  { id: 3, text: "Nilufar tug'ilgan kuni — 3 kun qoldi", time: "3 soat oldin", read: true, icon: '🎂' },
-  { id: 4, text: "Haftalik maqsad bajarildi! +7 streak", time: "kecha", read: true, icon: '🔥' },
-]
+const notifications: { id: number; text: string; time: string; read: boolean; icon: React.ReactNode }[] = []
 
 export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
   const { theme, setTheme } = useTheme()
@@ -101,30 +96,35 @@ export function Header({ onMenuClick }: { onMenuClick?: () => void }) {
                   </div>
                 </div>
                 <div className="max-h-72 overflow-y-auto">
-                  {notifications.map(n => (
-                    <div
-                      key={n.id}
-                      className={cn(
-                        'flex cursor-pointer items-start gap-3 border-b border-neutral-100 px-4 py-3 last:border-0 transition-colors',
-                        'hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800',
-                        !n.read && 'bg-amber-50/60 dark:bg-amber-950/20',
-                      )}
-                    >
-                      <span className="text-lg">{n.icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className={cn('text-xs leading-relaxed', n.read ? 'text-neutral-500 dark:text-neutral-400' : 'font-semibold text-neutral-800 dark:text-neutral-100')}>
-                          {n.text}
-                        </p>
-                        <p className="mt-0.5 text-[11px] text-neutral-400">{n.time}</p>
-                      </div>
-                      {!n.read && <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-amber-500" />}
+                  {notifications.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                      <Bell className="h-9 w-9 text-neutral-200 dark:text-neutral-700 mb-2.5" />
+                      <p className="text-xs font-bold text-neutral-500 dark:text-neutral-400">Bildirishnomalar yo'q</p>
+                      <p className="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5">Yangi bildirishnomalar bu yerda paydo bo'ladi</p>
                     </div>
-                  ))}
-                </div>
-                <div className="border-t border-neutral-100 px-4 py-2.5 text-center dark:border-neutral-800">
-                  <span className="cursor-pointer text-xs font-bold text-neutral-500 transition-colors hover:text-neutral-800 dark:hover:text-white">
-                    Barchasini ko'rish →
-                  </span>
+                  ) : (
+                    notifications.map(n => (
+                      <div
+                        key={n.id}
+                        className={cn(
+                          'flex cursor-pointer items-start gap-3 border-b border-neutral-100 px-4 py-3 last:border-0 transition-colors',
+                          'hover:bg-neutral-50 dark:border-neutral-800 dark:hover:bg-neutral-800',
+                          !n.read && 'bg-amber-50/60 dark:bg-amber-950/20',
+                        )}
+                      >
+                        <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-800">
+                          {n.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className={cn('text-xs leading-relaxed', n.read ? 'text-neutral-500 dark:text-neutral-400' : 'font-semibold text-neutral-800 dark:text-neutral-100')}>
+                            {n.text}
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-neutral-400">{n.time}</p>
+                        </div>
+                        {!n.read && <span className="mt-1 h-2 w-2 flex-shrink-0 rounded-full bg-amber-500" />}
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </>

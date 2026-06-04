@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
+import { NotificationListener } from '@/components/notifications/NotificationListener'
+import { KotibaBot } from '@/components/mascot/KotibaBot'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -37,6 +39,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </main>
       </div>
+
+      {/* Global: listens for SW notification events + plays ringtone */}
+      <NotificationListener />
+
+      {/* Site mascot — contextual tips on every page */}
+      <KotibaBot />
     </div>
   )
 }

@@ -59,49 +59,13 @@ function CategoryIcon({ category, size = 20 }: { category: string; size?: number
 
 /* ── Static data ────────────────────────────────────────────────── */
 const D = Date.now
-const INIT_TXS: Tx[] = [
-  { id:1,  title:'Tushlik',              type:'expense', amount:35000,   category:'Oziq-ovqat',    date:new Date(D())              },
-  { id:2,  title:'Oylik maosh',          type:'income',  amount:4500000, category:'Daromad',       date:new Date(D()-86400000)     },
-  { id:3,  title:'Taksi',                type:'expense', amount:22000,   category:'Transport',     date:new Date(D()-86400000)     },
-  { id:4,  title:"Ijara to'lovi",        type:'expense', amount:800000,  category:'Uy',            date:new Date(D()-2*86400000)   },
-  { id:5,  title:'Freelance loyiha',     type:'income',  amount:1200000, category:'Daromad',       date:new Date(D()-3*86400000)   },
-  { id:6,  title:'Supermarket',          type:'expense', amount:185000,  category:'Oziq-ovqat',    date:new Date(D()-3*86400000)   },
-  { id:7,  title:'Kino',                 type:'expense', amount:60000,   category:"Ko'ngil ochar", date:new Date(D()-4*86400000)   },
-  { id:8,  title:'Aptek',                type:'expense', amount:45000,   category:"Sog'liq",       date:new Date(D()-5*86400000)   },
-  { id:9,  title:'Restoran',             type:'expense', amount:120000,  category:'Oziq-ovqat',    date:new Date(D()-6*86400000)   },
-  { id:10, title:'Internet tarif',       type:'expense', amount:50000,   category:'Kommunal',      date:new Date(D()-7*86400000)   },
-  { id:11, title:"Bonus to'lov",         type:'income',  amount:500000,  category:'Daromad',       date:new Date(D()-8*86400000)   },
-  { id:12, title:'Benzin',               type:'expense', amount:85000,   category:'Transport',     date:new Date(D()-9*86400000)   },
-  { id:13, title:'Kitob',                type:'expense', amount:35000,   category:"O'qish",        date:new Date(D()-10*86400000)  },
-  { id:14, title:'Sport zal',            type:'expense', amount:150000,  category:"Sog'liq",       date:new Date(D()-12*86400000)  },
-  { id:15, title:"Telefon to'lovi",      type:'expense', amount:30000,   category:'Kommunal',      date:new Date(D()-14*86400000)  },
-]
+const INIT_TXS: Tx[] = []
 
-const INIT_BUDGET: BudgetCat[] = [
-  { id:1, name:'Oziq-ovqat',    spent:340000, budget:800000,  color:'#10B981' },
-  { id:2, name:'Transport',     spent:107000, budget:200000,  color:'#F59E0B' },
-  { id:3, name:'Uy',            spent:800000, budget:800000,  color:'#3B82F6' },
-  { id:4, name:"Ko'ngil ochar", spent:60000,  budget:300000,  color:'#8B5CF6' },
-  { id:5, name:"Sog'liq",       spent:195000, budget:200000,  color:'#EF4444' },
-  { id:6, name:'Kommunal',      spent:80000,  budget:150000,  color:'#06B6D4' },
-]
+const INIT_BUDGET: BudgetCat[] = []
 
-const MONTHLY = [
-  { month:'Iyul',  income:3800000, expense:2600000, savings:1200000 },
-  { month:'Avg',  income:4200000, expense:2900000, savings:1300000 },
-  { month:'Sen',  income:4500000, expense:2800000, savings:1700000 },
-  { month:'Okt',  income:5200000, expense:3100000, savings:2100000 },
-  { month:'Noy',  income:4800000, expense:2900000, savings:1900000 },
-  { month:'Dek',  income:5700000, expense:3400000, savings:2300000 },
-  { month:'Yan',  income:4900000, expense:3200000, savings:1700000 },
-  { month:'Fev',  income:5700000, expense:1950000, savings:3750000 },
-]
+const MONTHLY: { month: string; income: number; expense: number; savings: number }[] = []
 
 const CATS = ['Oziq-ovqat','Transport','Uy',"Ko'ngil ochar","Sog'liq","Kommunal","O'qish","Sovg'a",'Boshqa']
-const ICONS_MAP: Record<string, string> = {
-  'Oziq-ovqat':'🍔','Transport':'🚕','Uy':'🏠',"Ko'ngil ochar":'🎬',"Sog'liq":'💊',
-  'Kommunal':'📡',"O'qish":'📚',"Sovg'a":'🎁','Daromad':'💰','Boshqa':'📌',
-}
 
 /* ── Helpers ────────────────────────────────────────────────────── */
 const card = cn('rounded-2xl border bg-white dark:bg-[#111111] border-neutral-200 dark:border-white/[0.08]')
@@ -663,12 +627,13 @@ export default function FinancePage() {
           <div className={cn(card,'p-5')} style={shadow}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-black text-neutral-900 dark:text-white">Byudjet xulosasi</h3>
-              <span className={cn('text-xs font-bold px-2.5 py-1 rounded-full',
+              <span className={cn('flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full',
                 budget.some(b=>b.spent>=b.budget)
                   ? 'bg-red-100 dark:bg-red-500/15 text-red-600 dark:text-red-400'
                   : 'bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400')}>
-                {budget.filter(b=>b.spent>=b.budget).length===0?'✓ Barcha limitlar OK':
-                  `⚠ ${budget.filter(b=>b.spent>=b.budget).length} ta limit oshdi`}
+                {budget.filter(b=>b.spent>=b.budget).length===0
+                  ? <><CheckCircle2 className="w-3 h-3"/> Barcha limitlar OK</>
+                  : <><AlertTriangle className="w-3 h-3"/> {budget.filter(b=>b.spent>=b.budget).length} ta limit oshdi</>}
               </span>
             </div>
             <div className="grid grid-cols-3 gap-3">

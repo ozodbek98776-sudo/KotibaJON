@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Eye, EyeOff, Mail, Lock, ArrowRight, ArrowLeft } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, ArrowRight, ArrowLeft, Check } from 'lucide-react'
 import { KotibaLogo } from '@/components/ui/KotibaLogo'
 import toast from 'react-hot-toast'
 
@@ -127,8 +127,14 @@ export default function LoginPage() {
 
             {/* Feature pills */}
             <div className="flex flex-wrap gap-2">
-              {['✓ Bepul boshlash', '✓ O\'zbek tili', '✓ Offline rejim', '✓ Kredit karta yo\'q'].map(f => (
-                <span key={f} className="text-xs font-semibold text-emerald-100 bg-white/10 border border-white/15 rounded-full px-3 py-1.5 backdrop-blur-sm">
+              {[
+                'Bepul boshlash',
+                "O'zbek tili",
+                'Offline rejim',
+                "Kredit karta yo'q",
+              ].map(f => (
+                <span key={f} className="flex items-center gap-1.5 text-xs font-semibold text-emerald-100 bg-white/10 border border-white/15 rounded-full px-3 py-1.5 backdrop-blur-sm">
+                  <Check className="w-3 h-3 flex-shrink-0" />
                   {f}
                 </span>
               ))}

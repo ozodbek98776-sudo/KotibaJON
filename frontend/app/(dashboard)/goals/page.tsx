@@ -39,74 +39,7 @@ const getTheme = (cat: string) => THEME[cat] ?? THEME["Sog'liq"]
 
 /* ── Data ───────────────────────────────────────────────────────── */
 const D = Date.now
-const INIT: Goal[] = [
-  {
-    id:1, title:'Har kuni 10 000 qadam yurish', description:"Sog'liqni saqlash uchun kunlik faollik",
-    category:"Sog'liq", ...(() => { const t = getTheme("Sog'liq"); return { color:t.color, bgColor:t.bg, textColor:t.text } })(),
-    status:'active', progress:72, target:100, current:72, unit:'%', streak:7, createdAt:new Date('2026-04-01'),
-    milestones:[
-      { id:1, title:'Birinchi 7 kun ketma-ket', done:true, date:new Date('2026-05-23') },
-      { id:2, title:'Birinchi oy (30 kun)',      done:false },
-      { id:3, title:'3 oy davomida',             done:false },
-    ],
-  },
-  {
-    id:2, title:"5 000 000 so'm jamg'arish", description:'Favqulodda zaxira fondi',
-    category:'Moliya', ...(() => { const t = getTheme('Moliya'); return { color:t.color, bgColor:t.bg, textColor:t.text } })(),
-    status:'active', progress:64, target:5000000, current:3200000, unit:"so'm",
-    deadline:new Date('2026-09-28'), createdAt:new Date('2026-01-15'),
-    milestones:[
-      { id:1, title:"1 000 000 so'm",  done:true,  date:new Date('2026-02-15') },
-      { id:2, title:"2 500 000 so'm",  done:true,  date:new Date('2026-04-10') },
-      { id:3, title:"5 000 000 so'm",  done:false },
-    ],
-  },
-  {
-    id:3, title:"Yil davomida 12 ta kitob o'qish", description:'Har oyda kamida 1 ta kitob',
-    category:"O'qish", ...(() => { const t = getTheme("O'qish"); return { color:t.color, bgColor:t.bg, textColor:t.text } })(),
-    status:'active', progress:58, target:12, current:7, unit:'ta kitob',
-    deadline:new Date('2026-10-27'), createdAt:new Date('2026-01-01'),
-    milestones:[
-      { id:1, title:'3 ta kitob',  done:true,  date:new Date('2026-03-31') },
-      { id:2, title:'6 ta kitob',  done:true,  date:new Date('2026-05-20') },
-      { id:3, title:'9 ta kitob',  done:false },
-      { id:4, title:'12 ta kitob', done:false },
-    ],
-  },
-  {
-    id:4, title:"TypeScript ni o'rganish", description:'Advanced TypeScript patterns va generics',
-    category:'Kasbiy', ...(() => { const t = getTheme('Kasbiy'); return { color:t.color, bgColor:t.bg, textColor:t.text } })(),
-    status:'active', progress:85, target:100, current:85, unit:'%',
-    deadline:new Date('2026-06-29'), createdAt:new Date('2026-03-01'),
-    milestones:[
-      { id:1, title:'Basics',    done:true, date:new Date('2026-03-15') },
-      { id:2, title:'Generics',  done:true, date:new Date('2026-04-20') },
-      { id:3, title:'Advanced',  done:false },
-    ],
-  },
-  {
-    id:5, title:'Ingliz tilini B2 darajasiga yetkazish', description:'IELTS tayyorgarlik',
-    category:"O'qish", ...(() => { const t = getTheme("O'qish"); return { color:t.color, bgColor:t.bg, textColor:t.text } })(),
-    status:'paused', progress:40, target:100, current:40, unit:'%',
-    deadline:new Date('2026-12-16'), createdAt:new Date('2026-02-01'),
-    milestones:[
-      { id:1, title:'A2 darajasi', done:true,  date:new Date('2026-03-01') },
-      { id:2, title:'B1 darajasi', done:false },
-      { id:3, title:'B2 darajasi', done:false },
-    ],
-  },
-  {
-    id:6, title:"5 kg vazn yo'qotish", description:"Sport va to'g'ri ovqatlanish bilan",
-    category:"Sog'liq", ...(() => { const t = getTheme("Sog'liq"); return { color:t.color, bgColor:t.bg, textColor:t.text } })(),
-    status:'completed', progress:100, target:5, current:5, unit:'kg',
-    deadline:new Date('2026-05-01'), createdAt:new Date('2026-02-01'),
-    milestones:[
-      { id:1, title:'1 kg',  done:true, date:new Date('2026-02-20') },
-      { id:2, title:'3 kg',  done:true, date:new Date('2026-03-25') },
-      { id:3, title:'5 kg',  done:true, date:new Date('2026-04-28') },
-    ],
-  },
-]
+const INIT: Goal[] = []
 
 const CATS  = ["Sog'liq", 'Moliya', "O'qish", 'Kasbiy', 'Shaxsiy', 'Shaxsiy rivojlanish']
 const UNITS = ['%', "so'm", 'ta', 'km', 'soat', 'kun', 'kg', 'ta kitob', 'bet', 'marta']
