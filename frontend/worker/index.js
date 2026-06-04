@@ -122,8 +122,8 @@ async function fireNotification (notif) {
   try {
     await self.registration.showNotification(title, {
       body,
-      icon            : '/logo.png',
-      badge           : '/logo.png',
+      icon            : '/logo.svg',
+      badge           : '/logo.svg',
       tag             : `kj-${id}`,
       data            : { url, id },
       vibrate         : [200, 100, 200, 100, 400],
