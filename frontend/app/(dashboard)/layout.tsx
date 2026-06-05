@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { Header } from '@/components/layout/Header'
 import { NotificationListener } from '@/components/notifications/NotificationListener'
@@ -8,6 +9,19 @@ import { KotibaBot } from '@/components/mascot/KotibaBot'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const router = useRouter()
+
+  /* Widget yoki tashqi oynadan navigatsiya buyruqlarini tinglash */
+  useEffect(() => {
+    let bc: BroadcastChannel | null = null
+    try {
+      bc = new BroadcastChannel('kj-nav')
+      bc.onmessage = (e) => {
+        if (e.data?.path) router.push(e.data.path)
+      }
+    } catch (_) {}
+    return () => { bc?.close() }
+  }, [router])
 
   return (
     <div className="flex h-screen bg-background-light dark:bg-background-dark">

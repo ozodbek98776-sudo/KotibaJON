@@ -17,22 +17,68 @@ const WAKE_REPLIES = [
   "Hi there! How can I assist?",
 ]
 
+/* Desktop app opener — URI scheme + web fallback */
+function openApp(scheme: string, web: string, name: string): string {
+  let opened = false
+  const onBlur = () => { opened = true }
+  window.addEventListener('blur', onBlur, { once: true })
+  window.location.href = scheme
+  setTimeout(() => {
+    window.removeEventListener('blur', onBlur)
+    if (!opened) window.open(web, '_blank')
+  }, 1500)
+  return `Opening ${name}...`
+}
+
+/* KotibaJON navigatsiya — BroadcastChannel + opener + direct */
+function goSection(path: string, label: string): string {
+  try { const bc = new BroadcastChannel('kj-nav'); bc.postMessage({ path }); bc.close() } catch (_) {}
+  if (window.opener && !window.opener.closed) {
+    window.opener.location.href = path; window.opener.focus()
+  } else {
+    window.open(`https://kotibajon.vercel.app${path}`, '_blank')
+  }
+  return `${label} opened`
+}
+
 interface Cmd { match: RegExp; run: (m: RegExpMatchArray) => string }
 const CMDS: Cmd[] = [
-  { match: /google\s+(.+)/i,    run: m => { window.open(`https://google.com/search?q=${encodeURIComponent(m[1].trim())}`, '_blank'); return `Opening Google for ${m[1].trim()}` } },
-  { match: /google/i,            run: () => { window.open('https://google.com', '_blank'); return 'Google is now open' } },
-  { match: /youtube\s+(.+)/i,   run: m => { window.open(`https://youtube.com/results?search_query=${encodeURIComponent(m[1].trim())}`, '_blank'); return `Playing YouTube for ${m[1].trim()}` } },
-  { match: /youtube/i,           run: () => { window.open('https://youtube.com', '_blank'); return 'YouTube is now open' } },
-  { match: /telegram/i,          run: () => { window.open('https://web.telegram.org', '_blank'); return 'Telegram is now open' } },
-  { match: /instagram/i,         run: () => { window.open('https://instagram.com', '_blank'); return 'Instagram is now open' } },
-  { match: /gmail|email/i,       run: () => { window.open('https://mail.google.com', '_blank'); return 'Gmail is now open' } },
-  { match: /weather|ob.?havo/i,  run: () => { window.open('https://weather.com', '_blank'); return 'Opening weather' } },
-  { match: /maps?|xarita/i,      run: () => { window.open('https://maps.google.com', '_blank'); return 'Google Maps is now open' } },
-  { match: /chatgpt|gpt/i,       run: () => { window.open('https://chat.openai.com', '_blank'); return 'ChatGPT is now open' } },
-  { match: /claude/i,            run: () => { window.open('https://claude.ai', '_blank'); return 'Claude is now open' } },
-  { match: /wikipedia\s+(.+)/i,  run: m => { window.open(`https://uz.wikipedia.org/wiki/${encodeURIComponent(m[1].trim())}`, '_blank'); return `Opening Wikipedia for ${m[1].trim()}` } },
-  { match: /wikipedia/i,         run: () => { window.open('https://wikipedia.org', '_blank'); return 'Wikipedia is now open' } },
-  { match: /close|yop|закрой/i,  run: () => { window.close(); return 'Goodbye!' } },
+  /* Desktop ilovalar */
+  { match: /telegram/i,         run: () => openApp('tg://', 'https://web.telegram.org', 'Telegram') },
+  { match: /whatsapp/i,         run: () => openApp('whatsapp://', 'https://web.whatsapp.com', 'WhatsApp') },
+  { match: /discord/i,          run: () => openApp('discord://', 'https://discord.com/app', 'Discord') },
+  { match: /spotify/i,          run: () => openApp('spotify://', 'https://open.spotify.com', 'Spotify') },
+  { match: /zoom/i,             run: () => openApp('zoommtg://', 'https://zoom.us', 'Zoom') },
+  { match: /slack/i,            run: () => openApp('slack://', 'https://app.slack.com', 'Slack') },
+  { match: /notion/i,           run: () => openApp('notion://', 'https://notion.so', 'Notion') },
+  { match: /vscode|visual\s*studio/i, run: () => openApp('vscode://', 'https://vscode.dev', 'VS Code') },
+  { match: /instagram/i,        run: () => openApp('instagram://', 'https://instagram.com', 'Instagram') },
+  { match: /twitter|x\.com/i,   run: () => openApp('twitter://', 'https://x.com', 'X') },
+  { match: /steam/i,            run: () => openApp('steam://', 'https://store.steampowered.com', 'Steam') },
+  /* Web ilovalar */
+  { match: /google\s+(.+)/i,    run: m => { window.open(`https://google.com/search?q=${encodeURIComponent(m[1].trim())}`, '_blank'); return `Google: ${m[1].trim()}` } },
+  { match: /youtube\s+(.+)/i,   run: m => { window.open(`https://youtube.com/results?search_query=${encodeURIComponent(m[1].trim())}`, '_blank'); return `YouTube: ${m[1].trim()}` } },
+  { match: /google/i,           run: () => { window.open('https://google.com', '_blank'); return 'Google is open' } },
+  { match: /youtube/i,          run: () => { window.open('https://youtube.com', '_blank'); return 'YouTube is open' } },
+  { match: /gmail|email/i,      run: () => { window.open('https://mail.google.com', '_blank'); return 'Gmail is open' } },
+  { match: /weather|ob.?havo/i, run: () => { window.open('https://weather.com', '_blank'); return 'Weather is open' } },
+  { match: /maps?/i,            run: () => { window.open('https://maps.google.com', '_blank'); return 'Maps is open' } },
+  { match: /chatgpt|gpt/i,      run: () => { window.open('https://chat.openai.com', '_blank'); return 'ChatGPT is open' } },
+  { match: /claude/i,           run: () => { window.open('https://claude.ai', '_blank'); return 'Claude is open' } },
+  { match: /wikipedia\s+(.+)/i, run: m => { window.open(`https://wikipedia.org/wiki/${encodeURIComponent(m[1].trim())}`, '_blank'); return `Wikipedia: ${m[1].trim()}` } },
+  { match: /wikipedia/i,        run: () => { window.open('https://wikipedia.org', '_blank'); return 'Wikipedia is open' } },
+  /* KotibaJON bo'limlari */
+  { match: /task|vazifa/i,      run: () => goSection('/tasks', 'Tasks') },
+  { match: /financ|moliya/i,    run: () => goSection('/finance', 'Finance') },
+  { match: /librar|kutubxon/i,  run: () => goSection('/library', 'Library') },
+  { match: /goal|maqsad/i,      run: () => goSection('/goals', 'Goals') },
+  { match: /habit|odat/i,       run: () => goSection('/habits', 'Habits') },
+  { match: /planner/i,          run: () => goSection('/planner', 'Planner') },
+  { match: /report|hisobot/i,   run: () => goSection('/reports', 'Reports') },
+  { match: /setting|sozlam/i,   run: () => goSection('/settings', 'Settings') },
+  { match: /dashboard/i,        run: () => goSection('/dashboard', 'Dashboard') },
+  /* Yopish */
+  { match: /close|yop|закрой/i, run: () => { window.close(); return 'Goodbye!' } },
 ]
 
 function execCmd(text: string): string | null {

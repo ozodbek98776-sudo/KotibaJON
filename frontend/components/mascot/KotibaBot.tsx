@@ -353,53 +353,122 @@ const WAKE_WORD = /hey\s+tom|hey\s+tom[!.,]?|хэй\s+том|hey\s+tome/i
 
 export type VoiceState = 'off' | 'listening' | 'awake' | 'processing'
 
-/* ── Browser / app commands ─────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════
+   DESKTOP APP OPENER
+   URI scheme → agar ilova o'rnatilgan bo'lsa: desktop ilova ochiladi
+   Agar yo'q → window blur bo'lmaydi → 1.5s da web fallback ochiladi
+   ══════════════════════════════════════════════════════════════════ */
+function openDesktopApp(scheme: string, webFallback: string, name: string): string {
+  let appOpened = false
+  const onBlur = () => { appOpened = true }
+  window.addEventListener('blur', onBlur, { once: true })
+  window.location.href = scheme
+  setTimeout(() => {
+    window.removeEventListener('blur', onBlur)
+    if (!appOpened) window.open(webFallback, '_blank')
+  }, 1500)
+  return `✅ ${name} ochilmoqda...`
+}
+
+/* ── KotibaJON bo'lim ma'lumotlari ─────────────────────────────── */
+const SECTION_INFO: Record<string, { path: string; label: string; hint: string }> = {
+  tasks   : { path:'/tasks',     label:'Vazifalar',  hint:"Vazifalar bo'limi: + tugmasi bilan yangi vazifa qo'shing. Muhimlik darajasini (shoshilinch/yuqori/o'rta/past) belgilang. Kanban ko'rinishida jarayonni kuzating." },
+  finance : { path:'/finance',   label:'Moliya',     hint:"Moliya bo'limi: daromad va xarajatlaringizni yozing. Oylik byudjet belgilang. Grafikda qayerga ketganini ko'ring." },
+  library : { path:'/library',   label:'Kutubxona',  hint:"Kutubxona: 8 ta kitob bor. Bosing — 3D betlash bilan o'qing. Sahifalarni belgilang, progress saqlanadi." },
+  goals   : { path:'/goals',     label:'Maqsadlar',  hint:"Maqsadlar bo'limi: yillik maqsad qo'ying, bosqichlarga bo'ling, foiz progress ko'ring. SMART tizimidan foydalaning." },
+  habits  : { path:'/habits',    label:'Odatlar',    hint:"Odatlar: kunlik odatlarni belgilang, streak yig'ing. Har kuni belgilash — izchillik asosi." },
+  planner : { path:'/planner',   label:'Planner',    hint:"Kun tartibi: vaqt bloklariga bo'ling. Bloklarni sudrang. Pomodoro rejimini yoqing." },
+  reports : { path:'/reports',   label:'Hisobotlar', hint:"Hisobotlar: haftalik va oylik samaradorlik grafiklari. O'tgan oy bilan solishtiring." },
+  dashboard:{ path:'/dashboard', label:'Dashboard',  hint:"Dashboard: bugungi vazifalar, moliya va maqsadlar umumiy ko'rinishda." },
+  dates   : { path:'/dates',     label:'Sanalar',    hint:"Muhim sanalar: tug'ilgan kunlar, yilliklar, to'lov sanalarini qo'shing. Avtomatik eslatma o'rnatiladi." },
+  settings: { path:'/settings',  label:'Sozlamalar', hint:"Sozlamalar: profil, bildirishnomalar, ovoz, desktop widget va ko'rinishni boshqaring." },
+}
+
+function goToSection(key: string): string {
+  const s = SECTION_INFO[key]
+  if (!s) return ''
+  /* BroadcastChannel — widget dan ham asosiy oynaga navigatsiya */
+  try {
+    const bc = new BroadcastChannel('kj-nav')
+    bc.postMessage({ path: s.path })
+    bc.close()
+  } catch (_) {}
+  /* Agar hozir shu saytda bo'lsa — to'g'ridan navigatsiya */
+  if (window.location.hostname.includes('kotibajon') ||
+      window.location.hostname === 'localhost') {
+    window.location.href = s.path
+  } else if (window.opener && !window.opener.closed) {
+    window.opener.location.href = s.path
+    window.opener.focus()
+  } else {
+    window.open(`https://kotibajon.vercel.app${s.path}`, '_blank')
+  }
+  return `✅ ${s.label} — ${s.hint}`
+}
+
+/* ── Buyruqlar ──────────────────────────────────────────────────── */
 interface BCmd { match: RegExp; run: (m: RegExpMatchArray) => string }
 
 const BROWSER_CMDS: BCmd[] = [
-  /* Google — "google python yoz" | "googlega kir" | "open google" */
-  { match: /google\b.*?(?:ga|kir|open|bor|otkroi|открой)?\s+(?:va\s+)?(?:yoz|qidir|search|найди|ищи|write)\s+(.+)/i,
-    run: m => { window.open(`https://google.com/search?q=${encodeURIComponent(m[1].trim())}`, '_blank'); return `✅ Google: "${m[1].trim()}"` } },
-  { match: /(?:^|\s)google\s+(.+)/i,
-    run: m => { window.open(`https://google.com/search?q=${encodeURIComponent(m[1].trim())}`, '_blank'); return `✅ Google: "${m[1].trim()}"` } },
-  { match: /google/i,
-    run: () => { window.open('https://google.com', '_blank'); return '✅ Google ochildi' } },
+  /* ── Desktop ilovalar (URI scheme → web fallback) ── */
+  { match: /telegram/i,
+    run: () => openDesktopApp('tg://', 'https://web.telegram.org', 'Telegram') },
+  { match: /whatsapp/i,
+    run: () => openDesktopApp('whatsapp://', 'https://web.whatsapp.com', 'WhatsApp') },
+  { match: /discord/i,
+    run: () => openDesktopApp('discord://', 'https://discord.com/app', 'Discord') },
+  { match: /spotify/i,
+    run: () => openDesktopApp('spotify://', 'https://open.spotify.com', 'Spotify') },
+  { match: /zoom/i,
+    run: () => openDesktopApp('zoommtg://', 'https://zoom.us', 'Zoom') },
+  { match: /slack/i,
+    run: () => openDesktopApp('slack://', 'https://app.slack.com', 'Slack') },
+  { match: /notion/i,
+    run: () => openDesktopApp('notion://', 'https://notion.so', 'Notion') },
+  { match: /figma/i,
+    run: () => openDesktopApp('figma://', 'https://figma.com', 'Figma') },
+  { match: /vscode|visual\s*studio/i,
+    run: () => openDesktopApp('vscode://', 'https://vscode.dev', 'VS Code') },
+  { match: /teams|microsoft\s*teams/i,
+    run: () => openDesktopApp('msteams://', 'https://teams.microsoft.com', 'Teams') },
+  { match: /skype/i,
+    run: () => openDesktopApp('skype://', 'https://web.skype.com', 'Skype') },
+  { match: /steam/i,
+    run: () => openDesktopApp('steam://', 'https://store.steampowered.com', 'Steam') },
+  { match: /instagram/i,
+    run: () => openDesktopApp('instagram://', 'https://instagram.com', 'Instagram') },
+  { match: /twitter|x\.com/i,
+    run: () => openDesktopApp('twitter://', 'https://x.com', 'X (Twitter)') },
 
-  /* YouTube — "youtube lofi music" | "youtube ochiq" */
-  { match: /youtube\b.*?(?:ga|kir|open|bor)?\s+(?:va\s+)?(?:yoz|qidir|search|найди|ищи|write)?\s+(.+)/i,
-    run: m => { const q=m[1].trim(); window.open(`https://youtube.com/results?search_query=${encodeURIComponent(q)}`, '_blank'); return `✅ YouTube: "${q}"` } },
-  { match: /(?:^|\s)youtube\s+(.+)/i,
+  /* ── Web qidiruv ilovalar ── */
+  { match: /google\s+(.+)/i,
+    run: m => { window.open(`https://google.com/search?q=${encodeURIComponent(m[1].trim())}`, '_blank'); return `✅ Google: "${m[1].trim()}"` } },
+  { match: /youtube\s+(.+)/i,
     run: m => { window.open(`https://youtube.com/results?search_query=${encodeURIComponent(m[1].trim())}`, '_blank'); return `✅ YouTube: "${m[1].trim()}"` } },
-  { match: /youtube/i,
-    run: () => { window.open('https://youtube.com', '_blank'); return '✅ YouTube ochildi' } },
-
-  /* Wikipedia */
   { match: /wikipedia\s+(.+)/i,
     run: m => { window.open(`https://uz.wikipedia.org/wiki/${encodeURIComponent(m[1].trim())}`, '_blank'); return `✅ Wikipedia: "${m[1].trim()}"` } },
-  { match: /wikipedia/i,
-    run: () => { window.open('https://wikipedia.org', '_blank'); return '✅ Wikipedia ochildi' } },
-
-  /* Social & tools */
-  { match: /telegram/i,    run: () => { window.open('https://web.telegram.org', '_blank'); return '✅ Telegram ochildi' } },
-  { match: /instagram/i,   run: () => { window.open('https://instagram.com', '_blank'); return '✅ Instagram ochildi' } },
-  { match: /twitter|x\.com/i, run: () => { window.open('https://x.com', '_blank'); return '✅ X ochildi' } },
+  { match: /google/i,     run: () => { window.open('https://google.com', '_blank'); return '✅ Google ochildi' } },
+  { match: /youtube/i,    run: () => { window.open('https://youtube.com', '_blank'); return '✅ YouTube ochildi' } },
+  { match: /wikipedia/i,  run: () => { window.open('https://wikipedia.org', '_blank'); return '✅ Wikipedia ochildi' } },
   { match: /gmail|pochta/i,run: () => { window.open('https://mail.google.com', '_blank'); return '✅ Gmail ochildi' } },
   { match: /ob.?havo|weather|погода/i, run: () => { window.open('https://weather.com', '_blank'); return '✅ Ob-havo ochildi' } },
-  { match: /maps?|xarita|карта/i,      run: () => { window.open('https://maps.google.com', '_blank'); return '✅ Maps ochildi' } },
-  { match: /tarjima|translate|перевод/i,run: () => { window.open('https://translate.google.com', '_blank'); return '✅ Tarjimon ochildi' } },
-  { match: /github/i,      run: () => { window.open('https://github.com', '_blank'); return '✅ GitHub ochildi' } },
-  { match: /chatgpt|gpt/i, run: () => { window.open('https://chat.openai.com', '_blank'); return '✅ ChatGPT ochildi' } },
-  { match: /claude/i,      run: () => { window.open('https://claude.ai', '_blank'); return '✅ Claude ochildi' } },
+  { match: /maps?|xarita|карта/i, run: () => { window.open('https://maps.google.com', '_blank'); return '✅ Maps ochildi' } },
+  { match: /tarjima|translate|перевод/i, run: () => { window.open('https://translate.google.com', '_blank'); return '✅ Tarjimon ochildi' } },
+  { match: /github/i,     run: () => { window.open('https://github.com', '_blank'); return '✅ GitHub ochildi' } },
+  { match: /chatgpt|gpt/i,run: () => { window.open('https://chat.openai.com', '_blank'); return '✅ ChatGPT ochildi' } },
+  { match: /claude/i,     run: () => { window.open('https://claude.ai', '_blank'); return '✅ Claude ochildi' } },
 
-  /* App sections — oddiy so'z yetarli */
-  { match: /vazifa|tasks?/i,     run: () => { window.location.href = '/tasks';    return "✅ Vazifalar" } },
-  { match: /moliya|finance/i,    run: () => { window.location.href = '/finance';  return "✅ Moliya" } },
-  { match: /kutubxon|library/i,  run: () => { window.location.href = '/library';  return "✅ Kutubxona" } },
-  { match: /maqsad|goals?/i,     run: () => { window.location.href = '/goals';    return "✅ Maqsadlar" } },
-  { match: /odat|habits?/i,      run: () => { window.location.href = '/habits';   return "✅ Odatlar" } },
-  { match: /planner|kun\s*tartib/i, run: () => { window.location.href = '/planner'; return "✅ Planner" } },
-  { match: /hisobot|reports?/i,  run: () => { window.location.href = '/reports';  return "✅ Hisobotlar" } },
-  { match: /dashboard|bosh\s*sahifa/i, run: () => { window.location.href = '/dashboard'; return "✅ Dashboard" } },
+  /* ── KotibaJON bo'limlari ── */
+  { match: /vazifa|task/i,      run: () => goToSection('tasks') },
+  { match: /moliya|finance/i,   run: () => goToSection('finance') },
+  { match: /kutubxon|library/i, run: () => goToSection('library') },
+  { match: /maqsad|goal/i,      run: () => goToSection('goals') },
+  { match: /odat|habit/i,       run: () => goToSection('habits') },
+  { match: /planner|kun\s*tartib/i, run: () => goToSection('planner') },
+  { match: /hisobot|report/i,   run: () => goToSection('reports') },
+  { match: /sana|date/i,        run: () => goToSection('dates') },
+  { match: /sozlam|setting/i,   run: () => goToSection('settings') },
+  { match: /dashboard|bosh\s*sahifa|главная/i, run: () => goToSection('dashboard') },
 ]
 
 function execBrowserCmd(text: string): string | null {
