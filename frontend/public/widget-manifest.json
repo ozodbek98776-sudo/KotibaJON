@@ -1,0 +1,15 @@
+{
+  "name": "Tom — KotibaJON AI",
+  "short_name": "Tom AI",
+  "description": "Desktop AI assistant — voice commands, app launcher, AI chat",
+  "start_url": "/widget",
+  "scope": "/widget",
+  "display": "minimal-ui",
+  "background_color": "#0f0f1a",
+  "theme_color": "#6366f1",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

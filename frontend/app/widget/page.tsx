@@ -194,12 +194,14 @@ const CSS = `
    COMPONENT
 ───────────────────────────────────────────────────────────────── */
 export default function WidgetPage() {
-  const [st,      setSt]      = useState<St>('off')
-  const [msgs,    setMsgs]    = useState<Msg[]>([
+  const [st,        setSt]      = useState<St>('off')
+  const [msgs,      setMsgs]    = useState<Msg[]>([
     { id: 0, role: 'ai', text: 'Say "Hey Tom" to start!' }
   ])
-  const [input,   setInput]   = useState('')
-  const [emotion, setEmotion] = useState<'idle'|'happy'>('idle')
+  const [input,     setInput]   = useState('')
+  const [emotion,   setEmotion] = useState<'idle'|'happy'>('idle')
+  const [installable, setInstallable] = useState(false)
+  const deferredPrompt = useRef<any>(null)
   const nextId  = useRef(1)
   const stRef   = useRef<St>('off')
   const recRef  = useRef<any>(null)
@@ -308,6 +310,28 @@ export default function WidgetPage() {
     try { rec.start() } catch (_) { setTimeout(startSession, 400) }
   }, [set, addMsg, schedFlush])
 
+  /* PWA install prompt */
+  useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault()
+      deferredPrompt.current = e
+      setInstallable(true)
+    }
+    window.addEventListener('beforeinstallprompt', handler)
+    return () => window.removeEventListener('beforeinstallprompt', handler)
+  }, [])
+
+  const installApp = useCallback(async () => {
+    if (!deferredPrompt.current) return
+    deferredPrompt.current.prompt()
+    const { outcome } = await deferredPrompt.current.userChoice
+    if (outcome === 'accepted') {
+      setInstallable(false)
+      addMsg('ai', 'Tom AI installed! Now launch it from your desktop anytime.')
+    }
+    deferredPrompt.current = null
+  }, [addMsg])
+
   /* Auto-start */
   useEffect(() => {
     set('listening'); setTimeout(startSession, 500)
@@ -363,13 +387,20 @@ export default function WidgetPage() {
           borderBottom: '1px solid rgba(255,255,255,0.06)',
         }}>
           <span style={{ fontSize: 10, fontWeight: 800, color: '#818cf8', letterSpacing: 1 }}>TOM AI</span>
-          <div style={{ display: 'flex', gap: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            {installable && (
+              <button onClick={installApp} title="Install as Desktop App" style={{
+                background: 'linear-gradient(135deg,#6366f1,#8b5cf6)',
+                border: 'none', borderRadius: 6, cursor: 'pointer',
+                fontSize: 8, color: '#fff', fontWeight: 800, padding: '2px 6px',
+                letterSpacing: 0.3,
+              }}>⬇ Install</button>
+            )}
             <div style={{
               width: 10, height: 10, borderRadius: '50%',
               background: st === 'awake' ? '#10b981' : st === 'listening' ? '#818cf8' : '#4b5563',
-              animation: ringAnim,
-              cursor: 'default',
-            }} title={st === 'awake' ? 'Listening for command' : st === 'listening' ? 'Listening for "hey tom"' : 'Off'}/>
+              animation: ringAnim, cursor: 'default',
+            }} title={st === 'awake' ? 'Command mode' : st === 'listening' ? 'Say "hey tom"' : 'Off'}/>
             <button onClick={() => window.close()} style={{
               width: 14, height: 14, borderRadius: '50%', background: '#ef4444',
               border: 'none', cursor: 'pointer', fontSize: 8, color: '#fff', fontWeight: 900,
