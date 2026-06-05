@@ -133,6 +133,8 @@ export default function WidgetPage() {
   const recRef   = useRef<any>(null)
   const msgTimer = useRef<ReturnType<typeof setTimeout>|null>(null)
   const awakeT   = useRef<ReturnType<typeof setTimeout>|null>(null)
+  const cmdBuf   = useRef('')
+  const cmdTimer = useRef<ReturnType<typeof setTimeout>|null>(null)
 
   const set = useCallback((s: St) => { stRef.current = s; setSt(s) }, [])
 
@@ -150,6 +152,29 @@ export default function WidgetPage() {
     rec.interimResults = true
     rec.maxAlternatives = 3
 
+    /* Buferdagi buyruqni bajar */
+    const flush = () => {
+      const cmd = cmdBuf.current.trim()
+      cmdBuf.current = ''
+      if (!cmd || cmd.length < 2) return
+      if (awakeT.current) clearTimeout(awakeT.current)
+      set('processing')
+      const result = execCmd(cmd)
+      setMsg(result ?? `"${cmd}" — tushunmadim`); setEmotion('happy')
+      speak(result ?? "I didn't catch that", () => {
+        if (msgTimer.current) clearTimeout(msgTimer.current)
+        msgTimer.current = setTimeout(() => {
+          setMsg(''); setEmotion('idle')
+          if (stRef.current !== 'off') set('listening')
+        }, 800)
+      })
+    }
+
+    const schedFlush = () => {
+      if (cmdTimer.current) clearTimeout(cmdTimer.current)
+      cmdTimer.current = setTimeout(flush, 1000)
+    }
+
     rec.onresult = (e: any) => {
       if (widgetTtsActive) return
       const batch = e.results[e.resultIndex]
@@ -163,41 +188,35 @@ export default function WidgetPage() {
       if (stRef.current === 'listening') {
         if (alts.some(a => WAKE.test(a))) {
           const afterWake = tx.replace(WAKE, '').replace(/^\W+/, '').trim()
-          if (afterWake.length > 1) {
-            set('processing')
-            const result = execCmd(afterWake)
-            setMsg(result ?? `"${afterWake}" — tushunmadim`); setEmotion('happy')
-            speak(result ?? "I didn't catch that")
-            if (msgTimer.current) clearTimeout(msgTimer.current)
-            msgTimer.current = setTimeout(() => { setMsg(''); setEmotion('idle'); if (stRef.current !== 'off') set('listening') }, 3000)
-            return
+          if (isFin && afterWake.length > 1) {
+            cmdBuf.current = afterWake
+            set('awake'); setEmotion('happy')
+            const reply = WAKE_REPLIES[Math.floor(Math.random() * WAKE_REPLIES.length)]
+            setMsg(reply); speak(reply)
+            schedFlush()
+          } else {
+            if (awakeT.current) clearTimeout(awakeT.current)
+            cmdBuf.current = ''
+            const reply = WAKE_REPLIES[Math.floor(Math.random() * WAKE_REPLIES.length)]
+            set('awake'); setEmotion('happy'); setMsg(reply); speak(reply)
+            awakeT.current = setTimeout(() => {
+              if (stRef.current === 'awake') { flush(); set('listening'); setMsg('') }
+            }, 20_000)
           }
-          if (awakeT.current) clearTimeout(awakeT.current)
-          const reply = WAKE_REPLIES[Math.floor(Math.random() * WAKE_REPLIES.length)]
-          set('awake'); setEmotion('happy'); setMsg(reply); speak(reply)
-          awakeT.current = setTimeout(() => {
-            if (stRef.current === 'awake') { set('listening'); setMsg('') }
-          }, 7000)
         }
       } else if (stRef.current === 'awake' && isFin) {
         const clean = tx.replace(WAKE, '').replace(/^\W+/, '').trim()
         if (!clean || clean.length < 2) return
         if (awakeT.current) clearTimeout(awakeT.current)
-        set('processing')
-        const result = execCmd(clean)
-        setMsg(result ?? `"${clean}" — tushunmadim`)
-        setEmotion('happy')
-        speak(result ?? "Done", () => {
-          if (msgTimer.current) clearTimeout(msgTimer.current)
-          msgTimer.current = setTimeout(() => {
-            setMsg(''); setEmotion('idle')
-            if (stRef.current !== 'off') set('listening')
-          }, 800)
-        })
+        awakeT.current = setTimeout(() => {
+          if (stRef.current === 'awake') flush()
+        }, 20_000)
+        cmdBuf.current = (cmdBuf.current + ' ' + clean).trim()
+        schedFlush()
       }
     }
 
-    rec.onend = () => { if (stRef.current !== 'off') setTimeout(startSession, 200) }
+    rec.onend = () => { if (stRef.current !== 'off') setTimeout(startSession, 50) }
     rec.onerror = (ev: any) => {
       if (ev.error === 'not-allowed') { set('off'); setMsg('Mikrofon ruxsati yo\'q!') }
     }

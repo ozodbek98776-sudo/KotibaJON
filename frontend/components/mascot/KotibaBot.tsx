@@ -530,7 +530,7 @@ function toSpeech(result: string): string {
 }
 
 /* ══════════════════════════════════════════════════════════════════
-   useVoice  — v4: auto-start, TTS feedback, no button press needed
+   useVoice  — v5: debounce buffer — buyruqni to'liq aytishga imkon
    ══════════════════════════════════════════════════════════════════ */
 function useVoice(
   enabled : boolean,
@@ -541,8 +541,10 @@ function useVoice(
   const stateRef   = useRef<VoiceState>('off')
   const recRef     = useRef<any>(null)
   const awakeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  /* Callback reflar — closure eskirib qolmasin */
-  const cb = useRef({ onState, onWake, onCmd })
+  /* Buyruq bufer + debounce — to'liq gapni kutadi */
+  const cmdBuf     = useRef('')
+  const cmdTimer   = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const cb         = useRef({ onState, onWake, onCmd })
   useEffect(() => { cb.current = { onState, onWake, onCmd } })
 
   useEffect(() => {
@@ -550,76 +552,98 @@ function useVoice(
     const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     if (!SR) return
 
-    /* ── state setter ── */
     function set(s: VoiceState) {
       stateRef.current = s
       cb.current.onState(s)
     }
 
-    /* ── recognition session ── */
+    /* Buferdagi buyruqni bajarish */
+    function flushCmd() {
+      const cmd = cmdBuf.current.trim()
+      cmdBuf.current = ''
+      if (!cmd || cmd.length < 2) return
+      if (awakeTimer.current) clearTimeout(awakeTimer.current)
+      set('processing')
+      const res = execBrowserCmd(cmd)
+      cb.current.onCmd(cmd, res ?? cmd)
+      setTimeout(() => { if (stateRef.current !== 'off') set('listening') }, 2000)
+    }
+
+    /* Oxirgi so'zdan 1 soniya o'tgach buyruqni bajara */
+    function scheduleFlush() {
+      if (cmdTimer.current) clearTimeout(cmdTimer.current)
+      cmdTimer.current = setTimeout(flushCmd, 1000)
+    }
+
     function start() {
       if (stateRef.current === 'off') return
       try { recRef.current?.abort() } catch (_) {}
 
       const rec: any = new SR()
       recRef.current = rec
-
-      rec.lang            = 'en-US'  // ← "hey tom" aniq taniladi
-      rec.continuous      = true     // to'xtovsiz
-      rec.interimResults  = true     // har so'zda — tezkor
-      rec.maxAlternatives = 3        // bir nechta variant
+      rec.lang            = 'en-US'
+      rec.continuous      = true    // to'xtovsiz
+      rec.interimResults  = true    // interim — wake word tezroq tanilsin
+      rec.maxAlternatives = 3
 
       rec.onresult = (e: any) => {
-        /* Bot o'z ovozini eshitmasin */
         if (ttsActive) return
-
-        /* Faqat yangi natijani olamiz */
         const batch = e.results[e.resultIndex]
         if (!batch) return
 
         const alts: string[] = []
-        for (let j = 0; j < batch.length; j++) {
+        for (let j = 0; j < batch.length; j++)
           alts.push(batch[j].transcript.toLowerCase().trim())
-        }
         const tx      = alts[0]
         const isFinal = batch.isFinal
 
-        /* ── WAKE WORD ── */
+        /* ── WAKE WORD (interim + final ikkalasida) ── */
         if (stateRef.current === 'listening') {
           if (alts.some(a => WAKE_WORD.test(a))) {
-            /* Bitta gapda: "hey tom telegram" → darhol bajar */
             const afterWake = tx.replace(WAKE_WORD, '').replace(/^\W+/, '').trim()
-            if (afterWake.length > 1) {
-              set('processing')
-              const res = execBrowserCmd(afterWake)
-              cb.current.onCmd(afterWake, res ?? afterWake)
-              setTimeout(() => { if (stateRef.current !== 'off') set('listening') }, 2000)
-              return
+            if (isFinal && afterWake.length > 1) {
+              /* "hey tom telegram" — bitta gapda, buferga qo'sh */
+              cmdBuf.current = afterWake
+              set('awake'); cb.current.onWake()
+              scheduleFlush()
+            } else {
+              /* Faqat wake word — buyruq kutish */
+              if (awakeTimer.current) clearTimeout(awakeTimer.current)
+              cmdBuf.current = ''
+              set('awake'); cb.current.onWake()
+              /* 20 soniya — uzoq gaplar uchun yetarli */
+              awakeTimer.current = setTimeout(() => {
+                if (stateRef.current === 'awake') {
+                  cmdBuf.current = ''
+                  if (cmdTimer.current) clearTimeout(cmdTimer.current)
+                  set('listening')
+                }
+              }, 20_000)
             }
-            /* Faqat wake word — buyruq kutish rejimi */
-            if (awakeTimer.current) clearTimeout(awakeTimer.current)
-            set('awake')
-            cb.current.onWake()
-            awakeTimer.current = setTimeout(() => {
-              if (stateRef.current === 'awake') set('listening')
-            }, 7000)
           }
 
-        /* ── BUYRUQ (alohida gapda) ── */
+        /* ── BUYRUQ — faqat FINAL natijalar, debounce bilan ── */
         } else if (stateRef.current === 'awake' && isFinal) {
           const clean = tx.replace(WAKE_WORD, '').replace(/^\W+/, '').trim()
           if (!clean || clean.length < 2) return
+
+          /* Har yangi so'zda awake timeoutni yangilash */
           if (awakeTimer.current) clearTimeout(awakeTimer.current)
-          set('processing')
-          const res = execBrowserCmd(clean)
-          cb.current.onCmd(clean, res ?? clean)
-          setTimeout(() => { if (stateRef.current !== 'off') set('listening') }, 2000)
+          awakeTimer.current = setTimeout(() => {
+            if (stateRef.current === 'awake') {
+              flushCmd()  // vaqt o'tsa ham buyruqni bajar
+            }
+          }, 20_000)
+
+          /* So'zni buferga qo'sh, 1 soniya kutib bajar */
+          cmdBuf.current = (cmdBuf.current + ' ' + clean).trim()
+          scheduleFlush()
         }
       }
 
-      /* Session tugishi — qayta boshlash */
+      /* Session tugishi — tezda qayta boshlash (50ms) */
       rec.onend = () => {
-        if (stateRef.current !== 'off') setTimeout(start, 200)
+        if (stateRef.current !== 'off') setTimeout(start, 50)
       }
 
       rec.onerror = (ev: any) => {
@@ -628,19 +652,18 @@ function useVoice(
           set('off')
           alert(
             'Mikrofon ruxsati yo\'q!\n\n' +
-            'Chrome: manzil satrida 🔒 yoki 🎤 belgisini bosing\n' +
-            '→ Mikrofon → Har doim ruxsat → Sahifani yangilang'
+            'Chrome: manzil satrida 🔒 → Mikrofon → Har doim ruxsat → Yangilang'
           )
         }
-        /* no-speech, aborted, network → onend qayta boshlaydi */
       }
 
-      try { rec.start() } catch (_) { setTimeout(start, 500) }
+      try { rec.start() } catch (_) { setTimeout(start, 400) }
     }
 
-    /* ── enabled o'zgarganda ── */
     if (!enabled) {
       if (awakeTimer.current) clearTimeout(awakeTimer.current)
+      if (cmdTimer.current)   clearTimeout(cmdTimer.current)
+      cmdBuf.current = ''
       try { recRef.current?.abort() } catch (_) {}
       recRef.current = null
       set('off')
@@ -652,6 +675,8 @@ function useVoice(
 
     return () => {
       if (awakeTimer.current) clearTimeout(awakeTimer.current)
+      if (cmdTimer.current)   clearTimeout(cmdTimer.current)
+      cmdBuf.current = ''
       stateRef.current = 'off'
       try { recRef.current?.abort() } catch (_) {}
     }
