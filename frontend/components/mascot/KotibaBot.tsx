@@ -354,17 +354,11 @@ const WAKE_WORD = /hey\s+tom|hey\s+tom[!.,]?|хэй\s+том|hey\s+tome/i
 export type VoiceState = 'off' | 'listening' | 'awake' | 'processing'
 
 /* ══════════════════════════════════════════════════════════════════
-   DESKTOP APP OPENER — faqat URI scheme, fallback yo'q
+   DESKTOP APP OPENER
+   window.location.href — Chrome da URI scheme ishonchli ishlaydi
    ══════════════════════════════════════════════════════════════════ */
 function openDesktopApp(scheme: string, name: string): string {
-  /* Hidden <a> click — window.location.href ga qaraganda cleaner,
-     sahifani navigatsiya qilmaydi va browser dialog kamaytiradi    */
-  const a = document.createElement('a')
-  a.href = scheme
-  a.style.display = 'none'
-  document.body.appendChild(a)
-  a.click()
-  setTimeout(() => { try { document.body.removeChild(a) } catch (_) {} }, 500)
+  window.location.href = scheme
   return `✅ ${name} ochilmoqda`
 }
 

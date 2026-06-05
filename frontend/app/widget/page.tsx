@@ -17,14 +17,9 @@ const WAKE_REPLIES = [
   "Hi there! How can I assist?",
 ]
 
-/* Desktop app opener — faqat URI scheme, fallback yo'q */
+/* Desktop app opener — window.location.href URI scheme */
 function openApp(scheme: string, name: string): string {
-  const a = document.createElement('a')
-  a.href = scheme
-  a.style.display = 'none'
-  document.body.appendChild(a)
-  a.click()
-  setTimeout(() => { try { document.body.removeChild(a) } catch (_) {} }, 500)
+  window.location.href = scheme
   return `${name} opening...`
 }
 
