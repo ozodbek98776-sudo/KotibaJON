@@ -70,7 +70,7 @@ export default function LandingPage() {
            style={{ boxShadow: '0 1px 0 rgba(0,0,0,0.05)' }}>
         <div className="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between gap-6">
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 hover:opacity-80 transition-opacity">
-            <Image src="/logo.svg" alt="KOTIBAJON" width={36} height={36} className="rounded-xl" priority />
+            <Image src="/icons/icon-192.png" alt="KOTIBAJON" width={36} height={36} className="rounded-xl" priority />
             <span className="text-[17px] font-black tracking-tight text-slate-900">
               KOTIBA<span className="text-blue-600">JON</span>
             </span>
@@ -176,7 +176,7 @@ export default function LandingPage() {
                 {[['top-4 left-4','border-t-2 border-l-2 rounded-tl-lg'],['top-4 right-4','border-t-2 border-r-2 rounded-tr-lg'],['bottom-4 left-4','border-b-2 border-l-2 rounded-bl-lg'],['bottom-4 right-4','border-b-2 border-r-2 rounded-br-lg']].map(([pos,brd],i) => (
                   <div key={i} className={`absolute ${pos} w-5 h-5 ${brd} border-blue-500/40`} />
                 ))}
-                <Image src="/logo.svg" alt="KOTIBAJON" width={155} height={155} className="rounded-2xl relative z-10" />
+                <Image src="/icons/icon-192.png" alt="KOTIBAJON" width={155} height={155} className="rounded-2xl relative z-10" />
                 <div className="relative z-10 text-center">
                   <p className="text-white font-black text-lg tracking-[0.2em]">KOTIBAJON</p>
                   <p className="text-blue-400 text-[10px] font-bold tracking-[0.15em] uppercase mt-0.5">Shaxsiy Raqamli Kotiba</p>
@@ -404,7 +404,7 @@ export default function LandingPage() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 rounded-full pointer-events-none"
                  style={{ background:'radial-gradient(ellipse,rgba(37,99,235,0.35) 0%,transparent 70%)' }} />
             <div className="relative z-10">
-              <Image src="/logo.svg" alt="KOTIBAJON" width={72} height={72} className="mx-auto mb-6 rounded-2xl" />
+              <Image src="/icons/icon-192.png" alt="KOTIBAJON" width={72} height={72} className="mx-auto mb-6 rounded-2xl" />
               <h2 className="text-4xl font-black text-white mb-3 tracking-tight">Bugun boshlang!</h2>
               <p className="text-slate-400 mb-8 font-medium">30 soniyada ro'yxatdan o'ting. Kredit karta talab etilmaydi.</p>
               <Link href="/register"
@@ -429,7 +429,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
             <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
-              <Image src="/logo.svg" alt="KOTIBAJON" width={30} height={30} className="rounded-lg" />
+              <Image src="/icons/icon-192.png" alt="KOTIBAJON" width={30} height={30} className="rounded-lg" />
               <span className="font-black text-slate-900 text-sm">KOTIBA<span className="text-blue-600">JON</span></span>
             </Link>
             <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2">

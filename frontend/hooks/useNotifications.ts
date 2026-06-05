@@ -226,7 +226,7 @@ export function useNotifications () {
       if (!pending.length) return
       pending.forEach(n => {
         if (Notification?.permission === 'granted') {
-          new Notification(n.title, { body: n.body, icon: '/logo.svg', tag: n.id })
+          new Notification(n.title, { body: n.body, icon: '/icons/icon-192.png', tag: n.id })
         }
         if (n.sound !== false && soundEnabled()) playRingtone()
         markFired(n.id)
