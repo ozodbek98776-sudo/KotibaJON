@@ -354,20 +354,18 @@ const WAKE_WORD = /hey\s+tom|hey\s+tom[!.,]?|хэй\s+том|hey\s+tome/i
 export type VoiceState = 'off' | 'listening' | 'awake' | 'processing'
 
 /* ══════════════════════════════════════════════════════════════════
-   DESKTOP APP OPENER
-   URI scheme → agar ilova o'rnatilgan bo'lsa: desktop ilova ochiladi
-   Agar yo'q → window blur bo'lmaydi → 1.5s da web fallback ochiladi
+   DESKTOP APP OPENER — faqat URI scheme, fallback yo'q
    ══════════════════════════════════════════════════════════════════ */
-function openDesktopApp(scheme: string, webFallback: string, name: string): string {
-  let appOpened = false
-  const onBlur = () => { appOpened = true }
-  window.addEventListener('blur', onBlur, { once: true })
-  window.location.href = scheme
-  setTimeout(() => {
-    window.removeEventListener('blur', onBlur)
-    if (!appOpened) window.open(webFallback, '_blank')
-  }, 1500)
-  return `✅ ${name} ochilmoqda...`
+function openDesktopApp(scheme: string, name: string): string {
+  /* Hidden <a> click — window.location.href ga qaraganda cleaner,
+     sahifani navigatsiya qilmaydi va browser dialog kamaytiradi    */
+  const a = document.createElement('a')
+  a.href = scheme
+  a.style.display = 'none'
+  document.body.appendChild(a)
+  a.click()
+  setTimeout(() => { try { document.body.removeChild(a) } catch (_) {} }, 500)
+  return `✅ ${name} ochilmoqda`
 }
 
 /* ── KotibaJON bo'lim ma'lumotlari ─────────────────────────────── */
@@ -410,35 +408,39 @@ function goToSection(key: string): string {
 interface BCmd { match: RegExp; run: (m: RegExpMatchArray) => string }
 
 const BROWSER_CMDS: BCmd[] = [
-  /* ── Desktop ilovalar (URI scheme → web fallback) ── */
+  /* ── Desktop ilovalar (URI scheme, fallback yo'q — faqat app) ── */
   { match: /telegram/i,
-    run: () => openDesktopApp('tg://', 'https://web.telegram.org', 'Telegram') },
+    run: () => openDesktopApp('tg://', 'Telegram') },
   { match: /whatsapp/i,
-    run: () => openDesktopApp('whatsapp://', 'https://web.whatsapp.com', 'WhatsApp') },
+    run: () => openDesktopApp('whatsapp://', 'WhatsApp') },
   { match: /discord/i,
-    run: () => openDesktopApp('discord://', 'https://discord.com/app', 'Discord') },
+    run: () => openDesktopApp('discord://', 'Discord') },
   { match: /spotify/i,
-    run: () => openDesktopApp('spotify://', 'https://open.spotify.com', 'Spotify') },
+    run: () => openDesktopApp('spotify://', 'Spotify') },
   { match: /zoom/i,
-    run: () => openDesktopApp('zoommtg://', 'https://zoom.us', 'Zoom') },
+    run: () => openDesktopApp('zoommtg://zoom.us/join', 'Zoom') },
   { match: /slack/i,
-    run: () => openDesktopApp('slack://', 'https://app.slack.com', 'Slack') },
+    run: () => openDesktopApp('slack://', 'Slack') },
   { match: /notion/i,
-    run: () => openDesktopApp('notion://', 'https://notion.so', 'Notion') },
+    run: () => openDesktopApp('notion://', 'Notion') },
   { match: /figma/i,
-    run: () => openDesktopApp('figma://', 'https://figma.com', 'Figma') },
-  { match: /vscode|visual\s*studio/i,
-    run: () => openDesktopApp('vscode://', 'https://vscode.dev', 'VS Code') },
+    run: () => openDesktopApp('figma://', 'Figma') },
+  { match: /vscode|visual\s*studio\s*code/i,
+    run: () => openDesktopApp('vscode://', 'VS Code') },
   { match: /teams|microsoft\s*teams/i,
-    run: () => openDesktopApp('msteams://', 'https://teams.microsoft.com', 'Teams') },
+    run: () => openDesktopApp('msteams://', 'Teams') },
   { match: /skype/i,
-    run: () => openDesktopApp('skype://', 'https://web.skype.com', 'Skype') },
+    run: () => openDesktopApp('skype:?call', 'Skype') },
   { match: /steam/i,
-    run: () => openDesktopApp('steam://', 'https://store.steampowered.com', 'Steam') },
+    run: () => openDesktopApp('steam://', 'Steam') },
+  { match: /obsidian/i,
+    run: () => openDesktopApp('obsidian://', 'Obsidian') },
   { match: /instagram/i,
-    run: () => openDesktopApp('instagram://', 'https://instagram.com', 'Instagram') },
+    run: () => openDesktopApp('instagram://', 'Instagram') },
   { match: /twitter|x\.com/i,
-    run: () => openDesktopApp('twitter://', 'https://x.com', 'X (Twitter)') },
+    run: () => openDesktopApp('twitter://', 'X (Twitter)') },
+  { match: /1password/i,
+    run: () => openDesktopApp('onepassword://', '1Password') },
 
   /* ── Web qidiruv ilovalar ── */
   { match: /google\s+(.+)/i,
@@ -591,6 +593,16 @@ function useVoice(
         /* ── WAKE WORD ── */
         if (stateRef.current === 'listening') {
           if (alts.some(a => WAKE_WORD.test(a))) {
+            /* Bitta gapda: "hey tom telegram" → darhol bajar */
+            const afterWake = tx.replace(WAKE_WORD, '').replace(/^\W+/, '').trim()
+            if (afterWake.length > 1) {
+              set('processing')
+              const res = execBrowserCmd(afterWake)
+              cb.current.onCmd(afterWake, res ?? afterWake)
+              setTimeout(() => { if (stateRef.current !== 'off') set('listening') }, 2000)
+              return
+            }
+            /* Faqat wake word — buyruq kutish rejimi */
             if (awakeTimer.current) clearTimeout(awakeTimer.current)
             set('awake')
             cb.current.onWake()
@@ -599,14 +611,14 @@ function useVoice(
             }, 7000)
           }
 
-        /* ── BUYRUQ (faqat final) ── */
+        /* ── BUYRUQ (alohida gapda) ── */
         } else if (stateRef.current === 'awake' && isFinal) {
           const clean = tx.replace(WAKE_WORD, '').replace(/^\W+/, '').trim()
           if (!clean || clean.length < 2) return
           if (awakeTimer.current) clearTimeout(awakeTimer.current)
           set('processing')
           const res = execBrowserCmd(clean)
-          cb.current.onCmd(clean, res)
+          cb.current.onCmd(clean, res ?? clean)
           setTimeout(() => { if (stateRef.current !== 'off') set('listening') }, 2000)
         }
       }
@@ -1392,32 +1404,29 @@ export function KotibaBot() {
 
   /* Voice callbacks */
   const onVoiceWake = useCallback(() => {
+    /* Qisqa signal — "Yes?" */
     const reply = WAKE_REPLIES[Math.floor(Math.random() * WAKE_REPLIES.length)]
     setMessage('🎤 ' + reply)
     setLookup(true); setOpen(true); setBadge(false)
     setEmotion('happy')
-    /* TTS — bot ovoz chiqaradi */
     speakTTS(reply)
   }, [])
 
   const onVoiceCmd = useCallback((transcript: string, cmdResult: string | null) => {
     if (cmdResult) {
+      /* Buyruq bajarildi — natijani ko'rsat va ayt */
       setMessage(cmdResult)
       setLookup(true); setOpen(true)
       setEmotion('happy')
-      /* TTS natijasi */
       speakTTS(toSpeech(cmdResult), () => {
-        setTimeout(() => {
-          setLookup(false); setOpen(false); setEmotion('idle')
-        }, 1000)
+        setTimeout(() => { setLookup(false); setOpen(false); setEmotion('idle') }, 800)
       })
     } else {
-      /* AI chat'ga yo'naltiramiz */
-      speakTTS("Let me check that for you.", () => {
-        setAiOpen(true)
-        setLookup(false); setOpen(false)
-        window.dispatchEvent(new CustomEvent('kj-voice-msg', { detail: transcript }))
-      })
+      /* Buyruq tushunilmadi — faqat qisqa xabar, AI ochmaydi */
+      setMessage(`🤔 "${transcript}" — tushunmadim`)
+      setLookup(true); setOpen(true)
+      speakTTS("I didn't catch that. Try again.")
+      setTimeout(() => { setLookup(false); setOpen(false) }, 3000)
     }
   }, [])
 

@@ -17,17 +17,15 @@ const WAKE_REPLIES = [
   "Hi there! How can I assist?",
 ]
 
-/* Desktop app opener — URI scheme + web fallback */
-function openApp(scheme: string, web: string, name: string): string {
-  let opened = false
-  const onBlur = () => { opened = true }
-  window.addEventListener('blur', onBlur, { once: true })
-  window.location.href = scheme
-  setTimeout(() => {
-    window.removeEventListener('blur', onBlur)
-    if (!opened) window.open(web, '_blank')
-  }, 1500)
-  return `Opening ${name}...`
+/* Desktop app opener — faqat URI scheme, fallback yo'q */
+function openApp(scheme: string, name: string): string {
+  const a = document.createElement('a')
+  a.href = scheme
+  a.style.display = 'none'
+  document.body.appendChild(a)
+  a.click()
+  setTimeout(() => { try { document.body.removeChild(a) } catch (_) {} }, 500)
+  return `${name} opening...`
 }
 
 /* KotibaJON navigatsiya — BroadcastChannel + opener + direct */
@@ -43,18 +41,22 @@ function goSection(path: string, label: string): string {
 
 interface Cmd { match: RegExp; run: (m: RegExpMatchArray) => string }
 const CMDS: Cmd[] = [
-  /* Desktop ilovalar */
-  { match: /telegram/i,         run: () => openApp('tg://', 'https://web.telegram.org', 'Telegram') },
-  { match: /whatsapp/i,         run: () => openApp('whatsapp://', 'https://web.whatsapp.com', 'WhatsApp') },
-  { match: /discord/i,          run: () => openApp('discord://', 'https://discord.com/app', 'Discord') },
-  { match: /spotify/i,          run: () => openApp('spotify://', 'https://open.spotify.com', 'Spotify') },
-  { match: /zoom/i,             run: () => openApp('zoommtg://', 'https://zoom.us', 'Zoom') },
-  { match: /slack/i,            run: () => openApp('slack://', 'https://app.slack.com', 'Slack') },
-  { match: /notion/i,           run: () => openApp('notion://', 'https://notion.so', 'Notion') },
-  { match: /vscode|visual\s*studio/i, run: () => openApp('vscode://', 'https://vscode.dev', 'VS Code') },
-  { match: /instagram/i,        run: () => openApp('instagram://', 'https://instagram.com', 'Instagram') },
-  { match: /twitter|x\.com/i,   run: () => openApp('twitter://', 'https://x.com', 'X') },
-  { match: /steam/i,            run: () => openApp('steam://', 'https://store.steampowered.com', 'Steam') },
+  /* Desktop ilovalar — URI scheme (faqat app, fallback yo'q) */
+  { match: /telegram/i,              run: () => openApp('tg://', 'Telegram') },
+  { match: /whatsapp/i,              run: () => openApp('whatsapp://', 'WhatsApp') },
+  { match: /discord/i,               run: () => openApp('discord://', 'Discord') },
+  { match: /spotify/i,               run: () => openApp('spotify://', 'Spotify') },
+  { match: /zoom/i,                  run: () => openApp('zoommtg://zoom.us/join', 'Zoom') },
+  { match: /slack/i,                 run: () => openApp('slack://', 'Slack') },
+  { match: /notion/i,                run: () => openApp('notion://', 'Notion') },
+  { match: /figma/i,                 run: () => openApp('figma://', 'Figma') },
+  { match: /vscode|visual\s*studio/i,run: () => openApp('vscode://', 'VS Code') },
+  { match: /teams/i,                 run: () => openApp('msteams://', 'Teams') },
+  { match: /skype/i,                 run: () => openApp('skype:?call', 'Skype') },
+  { match: /steam/i,                 run: () => openApp('steam://', 'Steam') },
+  { match: /obsidian/i,              run: () => openApp('obsidian://', 'Obsidian') },
+  { match: /instagram/i,             run: () => openApp('instagram://', 'Instagram') },
+  { match: /twitter|x\.com/i,        run: () => openApp('twitter://', 'X') },
   /* Web ilovalar */
   { match: /google\s+(.+)/i,    run: m => { window.open(`https://google.com/search?q=${encodeURIComponent(m[1].trim())}`, '_blank'); return `Google: ${m[1].trim()}` } },
   { match: /youtube\s+(.+)/i,   run: m => { window.open(`https://youtube.com/results?search_query=${encodeURIComponent(m[1].trim())}`, '_blank'); return `YouTube: ${m[1].trim()}` } },
@@ -165,12 +167,19 @@ export default function WidgetPage() {
 
       if (stRef.current === 'listening') {
         if (alts.some(a => WAKE.test(a))) {
+          const afterWake = tx.replace(WAKE, '').replace(/^\W+/, '').trim()
+          if (afterWake.length > 1) {
+            set('processing')
+            const result = execCmd(afterWake)
+            setMsg(result ?? `"${afterWake}" — tushunmadim`); setEmotion('happy')
+            speak(result ?? "I didn't catch that")
+            if (msgTimer.current) clearTimeout(msgTimer.current)
+            msgTimer.current = setTimeout(() => { setMsg(''); setEmotion('idle'); if (stRef.current !== 'off') set('listening') }, 3000)
+            return
+          }
           if (awakeT.current) clearTimeout(awakeT.current)
-          set('awake')
-          setEmotion('happy')
           const reply = WAKE_REPLIES[Math.floor(Math.random() * WAKE_REPLIES.length)]
-          setMsg(reply)
-          speak(reply)
+          set('awake'); setEmotion('happy'); setMsg(reply); speak(reply)
           awakeT.current = setTimeout(() => {
             if (stRef.current === 'awake') { set('listening'); setMsg('') }
           }, 7000)
@@ -181,10 +190,9 @@ export default function WidgetPage() {
         if (awakeT.current) clearTimeout(awakeT.current)
         set('processing')
         const result = execCmd(clean)
-        const speech = result ?? `I couldn't understand "${clean}"`
         setMsg(result ?? `"${clean}" — tushunmadim`)
         setEmotion('happy')
-        speak(speech, () => {
+        speak(result ?? "Done", () => {
           if (msgTimer.current) clearTimeout(msgTimer.current)
           msgTimer.current = setTimeout(() => {
             setMsg(''); setEmotion('idle')
