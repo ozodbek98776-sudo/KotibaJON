@@ -4,7 +4,7 @@
   "description": "Desktop AI assistant — voice commands, app launcher, AI chat",
   "start_url": "/widget",
   "scope": "/widget",
-  "display": "minimal-ui",
+  "display": "standalone",
   "background_color": "#0f0f1a",
   "theme_color": "#6366f1",
   "orientation": "portrait",

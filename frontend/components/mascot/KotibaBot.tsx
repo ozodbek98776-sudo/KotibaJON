@@ -353,15 +353,6 @@ const WAKE_WORD = /hey\s+tom|hey\s+tom[!.,]?|хэй\s+том|hey\s+tome/i
 
 export type VoiceState = 'off' | 'listening' | 'awake' | 'processing'
 
-/* ══════════════════════════════════════════════════════════════════
-   DESKTOP APP OPENER
-   window.location.href — Chrome da URI scheme ishonchli ishlaydi
-   ══════════════════════════════════════════════════════════════════ */
-function openDesktopApp(scheme: string, name: string): string {
-  window.location.href = scheme
-  return `✅ ${name} ochilmoqda`
-}
-
 /* ── KotibaJON bo'lim ma'lumotlari ─────────────────────────────── */
 const SECTION_INFO: Record<string, { path: string; label: string; hint: string }> = {
   tasks   : { path:'/tasks',     label:'Vazifalar',  hint:"Vazifalar bo'limi: + tugmasi bilan yangi vazifa qo'shing. Muhimlik darajasini (shoshilinch/yuqori/o'rta/past) belgilang. Kanban ko'rinishida jarayonni kuzating." },
@@ -399,75 +390,60 @@ function goToSection(key: string): string {
 }
 
 /* ── Buyruqlar ──────────────────────────────────────────────────── */
-interface BCmd { match: RegExp; run: (m: RegExpMatchArray) => string }
+interface BCmdResult { text: string; href?: string }
+interface BCmd { match: RegExp; run: (m: RegExpMatchArray) => BCmdResult }
 
 const BROWSER_CMDS: BCmd[] = [
-  /* ── Desktop ilovalar (URI scheme, fallback yo'q — faqat app) ── */
-  { match: /telegram/i,
-    run: () => openDesktopApp('tg://', 'Telegram') },
-  { match: /whatsapp/i,
-    run: () => openDesktopApp('whatsapp://', 'WhatsApp') },
-  { match: /discord/i,
-    run: () => openDesktopApp('discord://', 'Discord') },
-  { match: /spotify/i,
-    run: () => openDesktopApp('spotify://', 'Spotify') },
-  { match: /zoom/i,
-    run: () => openDesktopApp('zoommtg://zoom.us/join', 'Zoom') },
-  { match: /slack/i,
-    run: () => openDesktopApp('slack://', 'Slack') },
-  { match: /notion/i,
-    run: () => openDesktopApp('notion://', 'Notion') },
-  { match: /figma/i,
-    run: () => openDesktopApp('figma://', 'Figma') },
-  { match: /vscode|visual\s*studio\s*code/i,
-    run: () => openDesktopApp('vscode://', 'VS Code') },
-  { match: /teams|microsoft\s*teams/i,
-    run: () => openDesktopApp('msteams://', 'Teams') },
-  { match: /skype/i,
-    run: () => openDesktopApp('skype:?call', 'Skype') },
-  { match: /steam/i,
-    run: () => openDesktopApp('steam://', 'Steam') },
-  { match: /obsidian/i,
-    run: () => openDesktopApp('obsidian://', 'Obsidian') },
-  { match: /instagram/i,
-    run: () => openDesktopApp('instagram://', 'Instagram') },
-  { match: /twitter|x\.com/i,
-    run: () => openDesktopApp('twitter://', 'X (Twitter)') },
-  { match: /1password/i,
-    run: () => openDesktopApp('onepassword://', '1Password') },
+  /* ── Desktop ilovalar (URI scheme) — tap bilan ochiladi ── */
+  { match: /telegram/i,              run: () => ({ text: '📱 Telegram',   href: 'tg://' }) },
+  { match: /whatsapp/i,              run: () => ({ text: '📱 WhatsApp',   href: 'whatsapp://' }) },
+  { match: /discord/i,               run: () => ({ text: '🎮 Discord',    href: 'discord://' }) },
+  { match: /spotify/i,               run: () => ({ text: '🎵 Spotify',    href: 'spotify://' }) },
+  { match: /zoom/i,                  run: () => ({ text: '📹 Zoom',       href: 'zoommtg://zoom.us/join' }) },
+  { match: /slack/i,                 run: () => ({ text: '💬 Slack',      href: 'slack://' }) },
+  { match: /notion/i,                run: () => ({ text: '📓 Notion',     href: 'notion://' }) },
+  { match: /figma/i,                 run: () => ({ text: '🎨 Figma',      href: 'figma://' }) },
+  { match: /vscode|visual\s*studio\s*code/i, run: () => ({ text: '💻 VS Code', href: 'vscode://' }) },
+  { match: /teams|microsoft\s*teams/i, run: () => ({ text: '👥 Teams',   href: 'msteams://' }) },
+  { match: /skype/i,                 run: () => ({ text: '📞 Skype',      href: 'skype:?call' }) },
+  { match: /steam/i,                 run: () => ({ text: '🎮 Steam',      href: 'steam://' }) },
+  { match: /obsidian/i,              run: () => ({ text: '🔮 Obsidian',   href: 'obsidian://' }) },
+  { match: /instagram/i,             run: () => ({ text: '📸 Instagram',  href: 'instagram://' }) },
+  { match: /twitter|x\.com/i,        run: () => ({ text: '🐦 X (Twitter)',href: 'twitter://' }) },
+  { match: /1password/i,             run: () => ({ text: '🔑 1Password',  href: 'onepassword://' }) },
 
-  /* ── Web qidiruv ilovalar ── */
+  /* ── Web qidiruv ── */
   { match: /google\s+(.+)/i,
-    run: m => { window.open(`https://google.com/search?q=${encodeURIComponent(m[1].trim())}`, '_blank'); return `✅ Google: "${m[1].trim()}"` } },
+    run: m => ({ text: `🔍 Google: "${m[1].trim()}"`, href: `https://google.com/search?q=${encodeURIComponent(m[1].trim())}` }) },
   { match: /youtube\s+(.+)/i,
-    run: m => { window.open(`https://youtube.com/results?search_query=${encodeURIComponent(m[1].trim())}`, '_blank'); return `✅ YouTube: "${m[1].trim()}"` } },
+    run: m => ({ text: `▶️ YouTube: "${m[1].trim()}"`, href: `https://youtube.com/results?search_query=${encodeURIComponent(m[1].trim())}` }) },
   { match: /wikipedia\s+(.+)/i,
-    run: m => { window.open(`https://uz.wikipedia.org/wiki/${encodeURIComponent(m[1].trim())}`, '_blank'); return `✅ Wikipedia: "${m[1].trim()}"` } },
-  { match: /google/i,     run: () => { window.open('https://google.com', '_blank'); return '✅ Google ochildi' } },
-  { match: /youtube/i,    run: () => { window.open('https://youtube.com', '_blank'); return '✅ YouTube ochildi' } },
-  { match: /wikipedia/i,  run: () => { window.open('https://wikipedia.org', '_blank'); return '✅ Wikipedia ochildi' } },
-  { match: /gmail|pochta/i,run: () => { window.open('https://mail.google.com', '_blank'); return '✅ Gmail ochildi' } },
-  { match: /ob.?havo|weather|погода/i, run: () => { window.open('https://weather.com', '_blank'); return '✅ Ob-havo ochildi' } },
-  { match: /maps?|xarita|карта/i, run: () => { window.open('https://maps.google.com', '_blank'); return '✅ Maps ochildi' } },
-  { match: /tarjima|translate|перевод/i, run: () => { window.open('https://translate.google.com', '_blank'); return '✅ Tarjimon ochildi' } },
-  { match: /github/i,     run: () => { window.open('https://github.com', '_blank'); return '✅ GitHub ochildi' } },
-  { match: /chatgpt|gpt/i,run: () => { window.open('https://chat.openai.com', '_blank'); return '✅ ChatGPT ochildi' } },
-  { match: /claude/i,     run: () => { window.open('https://claude.ai', '_blank'); return '✅ Claude ochildi' } },
+    run: m => ({ text: `📖 Wikipedia: "${m[1].trim()}"`, href: `https://uz.wikipedia.org/wiki/${encodeURIComponent(m[1].trim())}` }) },
+  { match: /google/i,     run: () => ({ text: '🔍 Google',       href: 'https://google.com' }) },
+  { match: /youtube/i,    run: () => ({ text: '▶️ YouTube',      href: 'https://youtube.com' }) },
+  { match: /wikipedia/i,  run: () => ({ text: '📖 Wikipedia',    href: 'https://wikipedia.org' }) },
+  { match: /gmail|pochta/i, run: () => ({ text: '📧 Gmail',      href: 'https://mail.google.com' }) },
+  { match: /ob.?havo|weather|погода/i, run: () => ({ text: '🌤 Ob-havo', href: 'https://weather.com' }) },
+  { match: /maps?|xarita|карта/i, run: () => ({ text: '🗺 Maps',  href: 'https://maps.google.com' }) },
+  { match: /tarjima|translate|перевод/i, run: () => ({ text: '🌐 Tarjimon', href: 'https://translate.google.com' }) },
+  { match: /github/i,     run: () => ({ text: '🐙 GitHub',       href: 'https://github.com' }) },
+  { match: /chatgpt|gpt/i,run: () => ({ text: '🤖 ChatGPT',      href: 'https://chat.openai.com' }) },
+  { match: /claude/i,     run: () => ({ text: '🤖 Claude AI',    href: 'https://claude.ai' }) },
 
-  /* ── KotibaJON bo'limlari ── */
-  { match: /vazifa|task/i,      run: () => goToSection('tasks') },
-  { match: /moliya|finance/i,   run: () => goToSection('finance') },
-  { match: /kutubxon|library/i, run: () => goToSection('library') },
-  { match: /maqsad|goal/i,      run: () => goToSection('goals') },
-  { match: /odat|habit/i,       run: () => goToSection('habits') },
-  { match: /planner|kun\s*tartib/i, run: () => goToSection('planner') },
-  { match: /hisobot|report/i,   run: () => goToSection('reports') },
-  { match: /sana|date/i,        run: () => goToSection('dates') },
-  { match: /sozlam|setting/i,   run: () => goToSection('settings') },
-  { match: /dashboard|bosh\s*sahifa|главная/i, run: () => goToSection('dashboard') },
+  /* ── KotibaJON bo'limlari — to'g'ridan navigatsiya ── */
+  { match: /vazifa|task/i,      run: () => ({ text: goToSection('tasks') }) },
+  { match: /moliya|finance/i,   run: () => ({ text: goToSection('finance') }) },
+  { match: /kutubxon|library/i, run: () => ({ text: goToSection('library') }) },
+  { match: /maqsad|goal/i,      run: () => ({ text: goToSection('goals') }) },
+  { match: /odat|habit/i,       run: () => ({ text: goToSection('habits') }) },
+  { match: /planner|kun\s*tartib/i, run: () => ({ text: goToSection('planner') }) },
+  { match: /hisobot|report/i,   run: () => ({ text: goToSection('reports') }) },
+  { match: /sana|date/i,        run: () => ({ text: goToSection('dates') }) },
+  { match: /sozlam|setting/i,   run: () => ({ text: goToSection('settings') }) },
+  { match: /dashboard|bosh\s*sahifa|главная/i, run: () => ({ text: goToSection('dashboard') }) },
 ]
 
-function execBrowserCmd(text: string): string | null {
+function execBrowserCmd(text: string): BCmdResult | null {
   for (const cmd of BROWSER_CMDS) {
     const m = text.match(cmd.match)
     if (m) return cmd.run(m)
@@ -536,7 +512,7 @@ function useVoice(
   enabled : boolean,
   onState : (s: VoiceState) => void,
   onWake  : () => void,
-  onCmd   : (transcript: string, cmdResult: string | null) => void,
+  onCmd   : (transcript: string, result: BCmdResult | null) => void,
 ) {
   const stateRef   = useRef<VoiceState>('off')
   const recRef     = useRef<any>(null)
@@ -565,7 +541,7 @@ function useVoice(
       if (awakeTimer.current) clearTimeout(awakeTimer.current)
       set('processing')
       const res = execBrowserCmd(cmd)
-      cb.current.onCmd(cmd, res ?? cmd)
+      cb.current.onCmd(cmd, res)
       setTimeout(() => { if (stateRef.current !== 'off') set('listening') }, 2000)
     }
 
@@ -1190,7 +1166,7 @@ function AiChatPanel({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function send(text?: string) {
+  async function send(text?: string) {
     const content = (text ?? input).trim()
     if (!content || loading) return
     setInput('')
@@ -1200,12 +1176,21 @@ function AiChatPanel({
     setMsgs(p=>[...p, userMsg, loadMsg])
     setLoading(true)
 
-    const delay = 1000 + Math.min(content.length*10, 1400)
-    setTimeout(()=>{
-      const reply = getAiReply(content)
+    try {
+      const res = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ message: content }),
+      })
+      const data = await res.json()
+      const reply: string = data.reply ?? 'Javob topilmadi.'
       setMsgs(p=>p.map(m=> m.id===loadMsg.id ? {...m, text:reply, loading:false} : m))
-      setLoading(false)
-    }, delay)
+    } catch {
+      setMsgs(p=>p.map(m=> m.id===loadMsg.id
+        ? {...m, text:'Tarmoq xatosi. Internet aloqasini tekshiring.', loading:false}
+        : m))
+    }
+    setLoading(false)
   }
 
   function clearChat() {
@@ -1396,6 +1381,7 @@ export function KotibaBot() {
   const [aiOpen,      setAiOpen]    = useState(false)
   const [voiceOn,     setVoiceOn]   = useState(true)   // auto-start
   const [voiceState,  setVoiceState]= useState<VoiceState>('off')
+  const [pendingHref, setPendingHref] = useState<string|null>(null)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const posRef       = useRef<Pos>({ x:0, y:0 })
@@ -1431,17 +1417,20 @@ export function KotibaBot() {
     speakTTS(reply)
   }, [])
 
-  const onVoiceCmd = useCallback((transcript: string, cmdResult: string | null) => {
-    if (cmdResult) {
-      /* Buyruq bajarildi — natijani ko'rsat va ayt */
-      setMessage(cmdResult)
+  const onVoiceCmd = useCallback((transcript: string, result: BCmdResult | null) => {
+    if (result) {
+      setMessage(result.text)
+      setPendingHref(result.href ?? null)
       setLookup(true); setOpen(true)
       setEmotion('happy')
-      speakTTS(toSpeech(cmdResult), () => {
-        setTimeout(() => { setLookup(false); setOpen(false); setEmotion('idle') }, 800)
+      const spoken = result.text.replace(/^[\p{Emoji}\s]+/u, '').split(':')[0].trim()
+      speakTTS(result.href ? `Opening ${spoken}` : toSpeech(result.text), () => {
+        if (!result.href) {
+          setTimeout(() => { setLookup(false); setOpen(false); setEmotion('idle'); setPendingHref(null) }, 800)
+        }
       })
     } else {
-      /* Buyruq tushunilmadi — faqat qisqa xabar, AI ochmaydi */
+      setPendingHref(null)
       setMessage(`🤔 "${transcript}" — tushunmadim`)
       setLookup(true); setOpen(true)
       speakTTS("I didn't catch that. Try again.")
@@ -1660,13 +1649,34 @@ export function KotibaBot() {
 
         {/* Small thought bubble (non-AI) */}
         {open && !aiOpen && (
-          <Bubble
-            shown={shown} ready={ready} info={info}
-            tipIdx={tipIdx%msgs.length} total={msgs.length}
-            onNext={()=>{ setTipIdx(i=>i+1); setEmotion('think'); setTimeout(()=>setEmotion('idle'),1200) }}
-            onClose={()=>{ setOpen(false); if(isLookup){setLookup(false);setSearching(false);setEmotion('idle')} }}
-            flipLeft={flipLeft} isLookup={isLookup}
-          />
+          <>
+            <Bubble
+              shown={shown} ready={ready} info={info}
+              tipIdx={tipIdx%msgs.length} total={msgs.length}
+              onNext={()=>{ setTipIdx(i=>i+1); setEmotion('think'); setTimeout(()=>setEmotion('idle'),1200) }}
+              onClose={()=>{ setOpen(false); setPendingHref(null); if(isLookup){setLookup(false);setSearching(false);setEmotion('idle')} }}
+              flipLeft={flipLeft} isLookup={isLookup}
+            />
+            {/* "Ochish" tugmasi — pendingHref bo'lganda ko'rinadi */}
+            {isLookup && pendingHref && ready && (
+              <a href={pendingHref} target="_blank" rel="noopener noreferrer"
+                onClick={() => { setOpen(false); setLookup(false); setEmotion('idle'); setPendingHref(null) }}
+                style={{
+                  position:'absolute', bottom:'calc(100% + 4px)',
+                  ...(flipLeft ? { right:0 } : { left:0 }),
+                  display:'flex', alignItems:'center', gap:4,
+                  padding:'5px 12px', borderRadius:20,
+                  background:'linear-gradient(135deg,#6366f1,#8b5cf6)',
+                  color:'#fff', fontSize:10, fontWeight:800,
+                  textDecoration:'none', whiteSpace:'nowrap',
+                  boxShadow:'0 4px 12px rgba(99,102,241,0.4)',
+                  zIndex:30, cursor:'pointer',
+                  animation:'slide-up-bot .25s cubic-bezier(.16,1,.3,1) both',
+                }}>
+                ↗ Ochish
+              </a>
+            )}
+          </>
         )}
 
         {/* Voice mic button — katta va ko'zga ko'rinadi */}

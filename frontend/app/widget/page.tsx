@@ -22,88 +22,93 @@ const WAKE_REPLIES = [
 ]
 
 /* ─────────────────────────────────────────────────────────────────
-   APP COMMANDS — URI scheme + web apps
+   APP COMMANDS
+   Professional yechim: har bir buyruq { text, href } qaytaradi.
+   href mavjud bo'lsa — chat ichida bosiladigan havola ko'rsatiladi.
+   Foydalanuvchi bosadi (real user gesture) → URI scheme/URL ochiladi.
 ───────────────────────────────────────────────────────────────── */
-function openUri(scheme: string) {
-  window.location.href = scheme
-}
-
-interface Cmd { match: RegExp; run: (m: RegExpMatchArray) => string }
+interface CmdResult { text: string; href?: string }
+interface Cmd { match: RegExp; run: (m: RegExpMatchArray) => CmdResult }
 
 const CMDS: Cmd[] = [
-  /* Desktop apps via URI scheme */
-  { match: /telegram/i,               run: () => { openUri('tg://');               return 'Telegram opening...' } },
-  { match: /whatsapp/i,               run: () => { openUri('whatsapp://');         return 'WhatsApp opening...' } },
-  { match: /discord/i,                run: () => { openUri('discord://');          return 'Discord opening...' } },
-  { match: /spotify/i,                run: () => { openUri('spotify://');          return 'Spotify opening...' } },
-  { match: /zoom/i,                   run: () => { openUri('zoommtg://zoom.us/join'); return 'Zoom opening...' } },
-  { match: /slack/i,                  run: () => { openUri('slack://');            return 'Slack opening...' } },
-  { match: /notion/i,                 run: () => { openUri('notion://');           return 'Notion opening...' } },
-  { match: /figma/i,                  run: () => { openUri('figma://');            return 'Figma opening...' } },
-  { match: /vscode|visual\s*studio/i, run: () => { openUri('vscode://');           return 'VS Code opening...' } },
-  { match: /teams/i,                  run: () => { openUri('msteams://');          return 'Teams opening...' } },
-  { match: /steam/i,                  run: () => { openUri('steam://');            return 'Steam opening...' } },
-  { match: /obsidian/i,               run: () => { openUri('obsidian://');         return 'Obsidian opening...' } },
+  /* ── Desktop apps (URI scheme) ── */
+  { match: /telegram/i,               run: () => ({ text: '📱 Telegram',   href: 'tg://' }) },
+  { match: /whatsapp/i,               run: () => ({ text: '📱 WhatsApp',   href: 'whatsapp://' }) },
+  { match: /discord/i,                run: () => ({ text: '🎮 Discord',    href: 'discord://' }) },
+  { match: /spotify/i,                run: () => ({ text: '🎵 Spotify',    href: 'spotify://' }) },
+  { match: /zoom/i,                   run: () => ({ text: '📹 Zoom',       href: 'zoommtg://zoom.us/join' }) },
+  { match: /slack/i,                  run: () => ({ text: '💬 Slack',      href: 'slack://' }) },
+  { match: /notion/i,                 run: () => ({ text: '📓 Notion',     href: 'notion://' }) },
+  { match: /figma/i,                  run: () => ({ text: '🎨 Figma',      href: 'figma://' }) },
+  { match: /vscode|visual\s*studio/i, run: () => ({ text: '💻 VS Code',    href: 'vscode://' }) },
+  { match: /teams/i,                  run: () => ({ text: '👥 Teams',      href: 'msteams://' }) },
+  { match: /steam/i,                  run: () => ({ text: '🎮 Steam',      href: 'steam://' }) },
+  { match: /obsidian/i,               run: () => ({ text: '🔮 Obsidian',   href: 'obsidian://' }) },
 
-  /* Web apps — open with optional query */
+  /* ── Web apps with query ── */
   { match: /claude.*(?:and|then|ask|write|type|about)\s+(.+)/i,
-    run: m => { window.open(`https://claude.ai/new`, '_blank'); return `Claude opened — type: "${m[1].trim()}"` } },
-  { match: /claude/i,
-    run: () => { window.open('https://claude.ai', '_blank'); return 'Claude AI opened' } },
+    run: m => ({ text: `🤖 Claude — "${m[1].trim()}"`, href: 'https://claude.ai/new' }) },
   { match: /chatgpt.*(?:and|then|ask|about)\s+(.+)/i,
-    run: m => { window.open(`https://chatgpt.com/?q=${encodeURIComponent(m[1].trim())}`, '_blank'); return `ChatGPT: "${m[1].trim()}"` } },
-  { match: /chatgpt|gpt/i,
-    run: () => { window.open('https://chatgpt.com', '_blank'); return 'ChatGPT opened' } },
+    run: m => ({ text: `🤖 ChatGPT — "${m[1].trim()}"`, href: `https://chatgpt.com/?q=${encodeURIComponent(m[1].trim())}` }) },
   { match: /google.*(?:search|find|look up|yoz|qidir)\s+(.+)/i,
-    run: m => { window.open(`https://google.com/search?q=${encodeURIComponent(m[1].trim())}`, '_blank'); return `Google: "${m[1].trim()}"` } },
+    run: m => ({ text: `🔍 Google: "${m[1].trim()}"`, href: `https://google.com/search?q=${encodeURIComponent(m[1].trim())}` }) },
   { match: /(?:^|\s)google\s+(.+)/i,
-    run: m => { window.open(`https://google.com/search?q=${encodeURIComponent(m[1].trim())}`, '_blank'); return `Google: "${m[1].trim()}"` } },
-  { match: /google/i,
-    run: () => { window.open('https://google.com', '_blank'); return 'Google opened' } },
-  { match: /youtube.*(?:search|find|play|yoz)\s+(.+)/i,
-    run: m => { window.open(`https://youtube.com/results?search_query=${encodeURIComponent(m[1].trim())}`, '_blank'); return `YouTube: "${m[1].trim()}"` } },
+    run: m => ({ text: `🔍 Google: "${m[1].trim()}"`, href: `https://google.com/search?q=${encodeURIComponent(m[1].trim())}` }) },
+  { match: /youtube.*(?:search|find|play|watch|yoz)\s+(.+)/i,
+    run: m => ({ text: `▶️ YouTube: "${m[1].trim()}"`, href: `https://youtube.com/results?search_query=${encodeURIComponent(m[1].trim())}` }) },
   { match: /(?:^|\s)youtube\s+(.+)/i,
-    run: m => { window.open(`https://youtube.com/results?search_query=${encodeURIComponent(m[1].trim())}`, '_blank'); return `YouTube: "${m[1].trim()}"` } },
-  { match: /youtube/i,
-    run: () => { window.open('https://youtube.com', '_blank'); return 'YouTube opened' } },
+    run: m => ({ text: `▶️ YouTube: "${m[1].trim()}"`, href: `https://youtube.com/results?search_query=${encodeURIComponent(m[1].trim())}` }) },
   { match: /github.*(?:search|find)\s+(.+)/i,
-    run: m => { window.open(`https://github.com/search?q=${encodeURIComponent(m[1].trim())}`, '_blank'); return `GitHub: "${m[1].trim()}"` } },
-  { match: /github/i,
-    run: () => { window.open('https://github.com', '_blank'); return 'GitHub opened' } },
-  { match: /gmail|email/i,
-    run: () => { window.open('https://mail.google.com', '_blank'); return 'Gmail opened' } },
-  { match: /instagram/i,
-    run: () => { window.open('https://instagram.com', '_blank'); return 'Instagram opened' } },
-  { match: /twitter|x\.com/i,
-    run: () => { window.open('https://x.com', '_blank'); return 'X (Twitter) opened' } },
-  { match: /weather|ob.?havo/i,
-    run: () => { window.open('https://weather.com', '_blank'); return 'Weather opened' } },
+    run: m => ({ text: `🐙 GitHub: "${m[1].trim()}"`, href: `https://github.com/search?q=${encodeURIComponent(m[1].trim())}` }) },
   { match: /wikipedia\s+(.+)/i,
-    run: m => { window.open(`https://en.wikipedia.org/wiki/${encodeURIComponent(m[1].trim())}`, '_blank'); return `Wikipedia: "${m[1].trim()}"` } },
-  { match: /wikipedia/i,
-    run: () => { window.open('https://wikipedia.org', '_blank'); return 'Wikipedia opened' } },
-  { match: /maps?|xarita/i,
-    run: () => { window.open('https://maps.google.com', '_blank'); return 'Maps opened' } },
-  { match: /translate|tarjima/i,
-    run: () => { window.open('https://translate.google.com', '_blank'); return 'Translator opened' } },
+    run: m => ({ text: `📖 Wikipedia: "${m[1].trim()}"`, href: `https://en.wikipedia.org/wiki/${encodeURIComponent(m[1].trim())}` }) },
 
-  /* KotibaJON navigation */
+  /* ── Web apps ── */
+  { match: /claude/i,        run: () => ({ text: '🤖 Claude AI',    href: 'https://claude.ai' }) },
+  { match: /chatgpt|gpt/i,   run: () => ({ text: '🤖 ChatGPT',      href: 'https://chatgpt.com' }) },
+  { match: /google/i,        run: () => ({ text: '🔍 Google',        href: 'https://google.com' }) },
+  { match: /youtube/i,       run: () => ({ text: '▶️ YouTube',       href: 'https://youtube.com' }) },
+  { match: /github/i,        run: () => ({ text: '🐙 GitHub',        href: 'https://github.com' }) },
+  { match: /gmail|email/i,   run: () => ({ text: '📧 Gmail',         href: 'https://mail.google.com' }) },
+  { match: /instagram/i,     run: () => ({ text: '📸 Instagram',     href: 'https://instagram.com' }) },
+  { match: /twitter|x\.com/i,run: () => ({ text: '🐦 X (Twitter)',   href: 'https://x.com' }) },
+  { match: /weather|ob.?havo/i, run: () => ({ text: '🌤 Weather',    href: 'https://weather.com' }) },
+  { match: /wikipedia/i,     run: () => ({ text: '📖 Wikipedia',     href: 'https://wikipedia.org' }) },
+  { match: /maps?|xarita/i,  run: () => ({ text: '🗺 Google Maps',   href: 'https://maps.google.com' }) },
+  { match: /translate|tarjima/i, run: () => ({ text: '🌐 Translate', href: 'https://translate.google.com' }) },
+
+  /* ── KotibaJON sections ── */
   { match: /kotibajon|kotiba.*(?:open|go|launch)/i,
-    run: () => { window.open('https://kotibajon.vercel.app/dashboard', '_blank'); return 'KotibaJON opened' } },
+    run: () => ({ text: '🏠 KotibaJON',    href: 'https://kotibajon.vercel.app/dashboard' }) },
   { match: /task|vazifa/i,
-    run: () => { window.open('https://kotibajon.vercel.app/tasks', '_blank'); return 'Tasks opened' } },
+    run: () => ({ text: '✅ Vazifalar',     href: 'https://kotibajon.vercel.app/tasks' }) },
   { match: /financ|moliya/i,
-    run: () => { window.open('https://kotibajon.vercel.app/finance', '_blank'); return 'Finance opened' } },
+    run: () => ({ text: '💰 Moliya',        href: 'https://kotibajon.vercel.app/finance' }) },
   { match: /librar|kutubxon/i,
-    run: () => { window.open('https://kotibajon.vercel.app/library', '_blank'); return 'Library opened' } },
+    run: () => ({ text: '📚 Kutubxona',     href: 'https://kotibajon.vercel.app/library' }) },
   { match: /goal|maqsad/i,
-    run: () => { window.open('https://kotibajon.vercel.app/goals', '_blank'); return 'Goals opened' } },
+    run: () => ({ text: '🎯 Maqsadlar',     href: 'https://kotibajon.vercel.app/goals' }) },
 
-  /* Widget control */
-  { match: /close|yop|закрой/i, run: () => { window.close(); return 'Goodbye!' } },
+  /* ── Widget control ── */
+  { match: /close|yop|закрой/i, run: () => { window.close(); return { text: 'Goodbye! 👋' } } },
 ]
 
-function execCmd(text: string): string | null {
+/* Buyruq vs savol farqi:
+   - Buyruq: "telegram och", "open spotify", qisqa iborat (≤3 so'z)
+   - Savol: "telegram haqida nima bilasan?", "qanday ishlataman?" */
+const CMD_VERBS = /\b(och|oching|open|launch|go|start|yoq|yop|find|search|qidir|kir|close|play)\b/i
+const QUESTION_WORDS = /\b(nima|qanday|qachon|qayerda|kim|nega|nima\s*uchun|what|how|when|where|who|why|haqida|about|tell|explain|что|как|когда|где|кто|почему|расскажи)\b/i
+
+function isCommandIntent(text: string): boolean {
+  const words = text.trim().split(/\s+/)
+  if (words.length <= 2) return true          // qisqa → buyruq
+  if (CMD_VERBS.test(text)) return true       // ochiq fe'l → buyruq
+  if (QUESTION_WORDS.test(text)) return false // savol so'zi → savol
+  return true                                  // default → buyruq
+}
+
+function execCmd(text: string): CmdResult | null {
+  if (!isCommandIntent(text)) return null
   for (const c of CMDS) {
     const m = text.match(c.match)
     if (m) return c.run(m)
@@ -172,7 +177,7 @@ function speak(text: string, onDone?: () => void) {
    TYPES
 ───────────────────────────────────────────────────────────────── */
 type St = 'off' | 'listening' | 'awake' | 'processing'
-interface Msg { id: number; role: 'user' | 'ai'; text: string }
+interface Msg { id: number; role: 'user' | 'ai'; text: string; href?: string; loading?: boolean }
 
 /* ─────────────────────────────────────────────────────────────────
    CSS
@@ -212,30 +217,58 @@ export default function WidgetPage() {
 
   const set = useCallback((s: St) => { stRef.current = s; setSt(s) }, [])
 
-  const addMsg = useCallback((role: 'user'|'ai', text: string) => {
-    setMsgs(p => [...p.slice(-6), { id: nextId.current++, role, text }])
+  const addMsg = useCallback((role: 'user'|'ai', text: string, href?: string, loading?: boolean) => {
+    const id = nextId.current++
+    setMsgs(p => [...p.slice(-6), { id, role, text, href, loading }])
+    setTimeout(() => scrollRef.current?.scrollTo({ top: 9999, behavior: 'smooth' }), 50)
+    return id
+  }, [])
+
+  const updateMsg = useCallback((id: number, text: string) => {
+    setMsgs(p => p.map(m => m.id === id ? { ...m, text, loading: false } : m))
     setTimeout(() => scrollRef.current?.scrollTo({ top: 9999, behavior: 'smooth' }), 50)
   }, [])
 
   /* ── Process input (command OR AI) ── */
-  const process = useCallback((text: string) => {
+  const process = useCallback(async (text: string) => {
     addMsg('user', text)
-    const cmd = execCmd(text)
-    if (cmd) {
-      addMsg('ai', cmd)
-      speak(cmd)
+    set('processing')
+
+    /* 1. Buyruqmi? */
+    const result = execCmd(text)
+    if (result) {
+      addMsg('ai', result.text, result.href)
+      const toSpeak = result.text.replace(/^[\p{Emoji}\s]+/u, '').split('—')[0].trim()
+      speak(result.href ? `Opening ${toSpeak}` : toSpeak)
       setEmotion('happy')
       setTimeout(() => setEmotion('idle'), 2000)
-    } else {
-      const ai = getAiReply(text)
-      addMsg('ai', ai)
-      speak(ai)
-      setEmotion('happy')
-      setTimeout(() => setEmotion('idle'), 3000)
+      if (awakeT.current) clearTimeout(awakeT.current)
+      setTimeout(() => { if (stRef.current !== 'off') set('listening') }, 1500)
+      return
     }
+
+    /* 2. Savol — real Claude API */
+    setEmotion('happy')
+    const loadId = addMsg('ai', '...', undefined, true)
+
+    try {
+      const res = await fetch('/api/ai', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ message: text }),
+      })
+      const data = await res.json()
+      const reply: string = data.reply ?? 'Javob topilmadi.'
+      updateMsg(loadId, reply)
+      speak(reply.slice(0, 120))  // TTS uchun qisqartir
+    } catch {
+      updateMsg(loadId, 'Tarmoq xatosi. Internet aloqasini tekshiring.')
+    }
+
+    setTimeout(() => setEmotion('idle'), 3000)
     if (awakeT.current) clearTimeout(awakeT.current)
-    setTimeout(() => { if (stRef.current !== 'off') set('listening') }, 1500)
-  }, [addMsg, set])
+    setTimeout(() => { if (stRef.current !== 'off') set('listening') }, 2000)
+  }, [addMsg, updateMsg, set])
 
   /* ── Debounce flush ── */
   const schedFlush = useCallback(() => {
@@ -331,6 +364,16 @@ export default function WidgetPage() {
     }
     deferredPrompt.current = null
   }, [addMsg])
+
+  /* Window size — popup va standalone PWA uchun */
+  useEffect(() => {
+    try {
+      const sw = window.screen.width
+      const sh = window.screen.height
+      window.resizeTo(220, 440)
+      window.moveTo(sw - 240, sh - 520)
+    } catch (_) {}
+  }, [])
 
   /* Auto-start */
   useEffect(() => {
@@ -436,7 +479,7 @@ export default function WidgetPage() {
               animation: 'fadein .2s ease',
             }}>
               <div style={{
-                maxWidth: '85%', padding: '5px 8px', borderRadius: 10,
+                maxWidth: '85%', borderRadius: 10, overflow: 'hidden',
                 fontSize: 10, lineHeight: 1.4, fontWeight: 500,
                 background: m.role === 'user'
                   ? 'linear-gradient(135deg,#7c3aed,#6366f1)'
@@ -445,7 +488,36 @@ export default function WidgetPage() {
                 borderBottomRightRadius: m.role === 'user' ? 2 : 10,
                 borderBottomLeftRadius:  m.role === 'ai'   ? 2 : 10,
               }}>
-                {m.text}
+                <div style={{ padding: '5px 8px' }}>
+                  {m.loading
+                    ? <span style={{ display:'inline-flex', gap:3, alignItems:'center' }}>
+                        {[0,1,2].map(i => (
+                          <span key={i} style={{
+                            width:4, height:4, borderRadius:'50%',
+                            background:'rgba(255,255,255,0.5)',
+                            display:'inline-block',
+                            animation:`fadein .6s ease-in-out ${i*0.18}s infinite alternate`,
+                          }}/>
+                        ))}
+                      </span>
+                    : m.text}
+                </div>
+                {m.href && (
+                  <a href={m.href} target="_blank" rel="noopener noreferrer"
+                     style={{
+                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+                       padding: '5px 8px',
+                       background: 'rgba(99,102,241,0.35)',
+                       color: '#a5b4fc',
+                       fontSize: 9, fontWeight: 800,
+                       textDecoration: 'none',
+                       borderTop: '1px solid rgba(255,255,255,0.07)',
+                       letterSpacing: 0.5,
+                       cursor: 'pointer',
+                     }}>
+                    ↗ Ochish
+                  </a>
+                )}
               </div>
             </div>
           ))}
