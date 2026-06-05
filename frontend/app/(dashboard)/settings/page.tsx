@@ -13,10 +13,10 @@ import { cn } from '@/lib/utils'
 function openDesktopWidget() {
   const sw = window.screen.width
   const sh = window.screen.height
-  const ww = 160, wh = 230
+  const ww = 220, wh = 440
   const win = window.open(
     '/widget', 'kotibabot_widget',
-    `width=${ww},height=${wh},left=${sw-ww-20},top=${sh-wh-60},titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=yes`,
+    `width=${ww},height=${wh},left=${sw-ww-20},top=${sh-wh-80},titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=yes`,
   )
   if (!win) alert('Pop-up bloklandi! Brauzerda pop-up ruxsatini bering va qayta bosing.')
 }
